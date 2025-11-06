@@ -1,0 +1,144 @@
+{{#unless site.mobileView}}
+  {{page-title "UK Photography Directory | ThePhotographers.uk"}}
+{{/unless}}
+
+<div class="company-directory-container">
+  <div class="directory-header">
+    <h1>UK Photography Directory</h1>
+    <p>Find professional photographers across the United Kingdom. Browse portfolios, compare services, and connect with local photography experts.</p>
+  </div>
+
+  <div class="directory-filters">
+    <div class="filter-group">
+      {{combo-box
+        content=cities
+        value=selectedCity
+        nameProperty="name"
+        valueProperty="value"
+        placeholderKey="company_directory.directory.filter_by_city"
+        class="directory-filter-select"
+        onChange=(action "filterByCity")
+      }}
+    </div>
+
+    <div class="filter-group">
+      {{combo-box
+        content=categories
+        value=selectedCategory
+        nameProperty="name"
+        valueProperty="value"
+        placeholderKey="company_directory.directory.filter_by_category"
+        class="directory-filter-select"
+        onChange=(action "filterByCategory")
+      }}
+    </div>
+
+    <div class="search-group">
+      {{text-field
+        value=searchQuery
+        placeholderKey="company_directory.directory.search_placeholder"
+        class="directory-search-input"
+        enter=(action "search")
+      }}
+      {{d-button
+        action=(action "search")
+        label="search.search"
+        class="btn-primary directory-search-btn"
+      }}
+    </div>
+
+    {{#if hasFilters}}
+      {{d-button
+        action=(action "clearFilters")
+        label="company_directory.directory.clear_filters"
+        class="btn-default"
+      }}
+    {{/if}}
+  </div>
+
+  {{#if loading}}
+    <div class="directory-loading">
+      {{loading-spinner size="large"}}
+    </div>
+  {{else}}
+    {{#if listings}}
+      <div class="directory-results">
+        <p class="results-count">
+          {{i18n "company_directory.directory.showing_results" count=totalCount}}
+        </p>
+
+        <div class="business-listings">
+          {{#each listings as |listing|}}
+            <div class="business-listing-card {{if listing.featured 'featured'}}">
+              {{#if listing.featured}}
+                <div class="featured-badge">
+                  {{i18n "company_directory.directory.featured"}}
+                </div>
+              {{/if}}
+
+              <div class="business-listing-header">
+                <div class="listing-main-info">
+                  <h3 class="business-listing-title">
+                    <a href={{listing.profile_url}}>{{listing.business_name}}</a>
+                  </h3>
+                  <div class="business-listing-category">{{listing.category}}</div>
+                </div>
+                <div class="listing-location">
+                  {{d-icon "map-marker-alt"}} {{listing.city}}
+                </div>
+              </div>
+
+              <div class="business-listing-description">
+                {{listing.description}}
+              </div>
+
+              {{#if listing.image_urls}}
+                <div class="business-listing-images">
+                  {{#each listing.image_urls as |imageUrl|}}
+                    <img src={{imageUrl}} alt="{{listing.business_name}}" class="business-listing-image" loading="lazy">
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              <div class="business-listing-meta">
+                {{#if listing.website}}
+                  <a href={{listing.website}} target="_blank" rel="noopener" class="website-link">
+                    {{d-icon "globe"}} {{i18n "company_directory.directory.website"}}
+                  </a>
+                {{/if}}
+
+                <div class="views-count">
+                  {{d-icon "eye"}} {{listing.views_count}} views
+                </div>
+
+                <div class="listing-actions">
+                  {{d-button
+                    action=(action "viewProfile" listing)
+                    label="company_directory.directory.view_profile"
+                    class="btn-primary btn-small"
+                  }}
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+
+        {{#if hasMore}}
+          <div class="load-more-container">
+            {{d-button
+              action=(action "loadMore")
+              label="company_directory.directory.load_more"
+              class="btn-default"
+              disabled=loadingMore
+            }}
+          </div>
+        {{/if}}
+      </div>
+    {{else}}
+      <div class="no-listings">
+        {{d-icon "camera" class="no-listings-icon"}}
+        <p>{{i18n "company_directory.directory.no_listings"}}</p>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>

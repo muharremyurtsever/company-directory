@@ -1,0 +1,266 @@
+plugins:
+  company_directory_enabled:
+    client: true
+    default: false
+    description: "Enable the Company Directory plugin"
+  
+  company_directory_subscription_plan_id:
+    default: ""
+    description: "Stripe subscription plan ID for directory listings"
+    
+  company_directory_auto_approve:
+    client: true
+    default: true
+    description: "Automatically approve new business listings"
+    
+  company_directory_max_images:
+    client: true
+    default: 5
+    min: 1
+    max: 20
+    description: "Maximum number of images per business listing"
+    
+  company_directory_show_in_sitemap:
+    default: true
+    description: "Include directory pages in sitemap"
+    
+  company_directory_featured_limit:
+    default: 5
+    min: 1
+    max: 20
+    description: "Maximum number of featured listings per city/category page"
+
+  company_directory_locations:
+    type: list
+    list_type: simple
+    default: |
+      London
+      Birmingham
+      Manchester
+      Liverpool
+      Leeds
+      Sheffield
+      Bristol
+      Coventry
+      Leicester
+      Bradford
+      Nottingham
+      Newcastle
+      Belfast
+      Brighton
+      Hull
+      Plymouth
+      Stoke
+      Wolverhampton
+      Derby
+      Southampton
+      Portsmouth
+      Norwich
+      Exeter
+      Bath
+      York
+      Oxford
+      Cambridge
+      Canterbury
+      Chester
+      Worcester
+      Gloucester
+      Salisbury
+      Winchester
+      Lincoln
+      Durham
+      Carlisle
+      Preston
+      Lancaster
+      Blackpool
+      Bournemouth
+      Swindon
+      Reading
+      Slough
+      Luton
+      Northampton
+      Milton Keynes
+      Peterborough
+      Ipswich
+      Colchester
+      Chelmsford
+      Southend
+      Basildon
+      Harlow
+      Watford
+      St Albans
+      Hemel Hempstead
+      Stevenage
+      Crawley
+      Worthing
+      Eastbourne
+      Hastings
+      Maidstone
+      Gillingham
+      Dartford
+      Gravesend
+      Chatham
+      Medway
+      Ashford
+      Folkestone
+      Dover
+      Margate
+      Ramsgate
+      Thanet
+      Tunbridge Wells
+      Sevenoaks
+      Bromley
+      Croydon
+      Kingston
+      Richmond
+      Wimbledon
+      Sutton
+      Epsom
+      Guildford
+      Woking
+      Farnham
+      Aldershot
+      Basingstoke
+      Andover
+      Eastleigh
+      Fareham
+      Gosport
+      Havant
+      Chichester
+      Horsham
+      Redhill
+      Dorking
+      Leatherhead
+      Esher
+      Walton
+      Weybridge
+      Chertsey
+      Staines
+      Windsor
+      Maidenhead
+      Bracknell
+      Wokingham
+      Newbury
+      Hungerford
+      Marlborough
+      Devizes
+      Chippenham
+      Melksham
+      Trowbridge
+      Warminster
+      Frome
+      Yeovil
+      Bridgwater
+      Burnham
+      Weston
+      Clevedon
+      Portishead
+      Keynsham
+      Midsomer Norton
+      Radstock
+      Shepton Mallet
+      Wells
+      Glastonbury
+      Bridgwater
+      Taunton
+      Wellington
+      Chard
+      Crewkerne
+      Ilminster
+      Minehead
+      Watchet
+      Dulverton
+      Exmoor
+      Lynton
+      Barnstaple
+      Bideford
+      Ilfracombe
+      South Molton
+      Crediton
+      Tiverton
+      Cullompton
+      Honiton
+      Sidmouth
+      Exmouth
+      Dawlish
+      Teignmouth
+      Newton Abbot
+      Paignton
+      Torquay
+      Brixham
+      Dartmouth
+      Totnes
+      Ivybridge
+      Saltash
+      Liskeard
+      Bodmin
+      Wadebridge
+      Padstow
+      Newquay
+      St Austell
+      Truro
+      Falmouth
+      Penryn
+      Helston
+      Penzance
+      St Ives
+      Hayle
+      Camborne
+      Redruth
+    description: "List of UK cities/locations for business directory"
+
+  company_directory_categories:
+    type: list
+    list_type: simple  
+    default: |
+      Wedding Photographer
+      Portrait Photographer
+      Food Photographer
+      Product Photographer
+      Baby Photographer
+      Maternity Photographer
+      Family Photographer
+      Event Photographer
+      Corporate Photographer
+      Headshot Photographer
+      Fashion Photographer
+      Real Estate Photographer
+      Landscape Photographer
+      Street Photographer
+      Sports Photographer
+      Pet Photographer
+      Architectural Photographer
+      Commercial Photographer
+      Documentary Photographer
+      Fine Art Photographer
+      Nature Photographer
+      Travel Photographer
+      Newborn Photographer
+      Children Photographer
+      Senior Photographer
+      Engagement Photographer
+      Boudoir Photographer
+      Lifestyle Photographer
+      Editorial Photographer
+      Advertising Photographer
+      Industrial Photographer
+      Medical Photographer
+      School Photographer
+      Concert Photographer
+      Theatre Photographer
+      Dance Photographer
+      Automotive Photographer
+      Drone Photographer
+      360 Photographer
+      VR Photographer
+      Stock Photographer
+      Photojournalist
+      Social Media Photographer
+      Influencer Photographer
+      Brand Photographer
+      Marketing Photographer
+      E-commerce Photographer
+      Catalogue Photographer
+      Beauty Photographer
+      Glamour Photographer
+    description: "Photography categories for business directory"

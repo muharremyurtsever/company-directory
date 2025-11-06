@@ -1,0 +1,183 @@
+<%
+  content_for :title, @page_title
+  content_for :head do
+%>
+  <meta name="description" content="<%= @page_description %>">
+  <meta property="og:title" content="<%= @page_title %>">
+  <meta property="og:description" content="<%= @page_description %>">
+  <meta property="og:url" content="<%= @canonical_url %>">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="<%= @canonical_url %>">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "<%= @city %> <%= @category %>s",
+    "description": "<%= @page_description %>",
+    "url": "<%= @canonical_url %>",
+    "numberOfItems": <%= @total_count %>,
+    "provider": {
+      "@type": "Organization",
+      "name": "ThePhotographers.uk",
+      "url": "<%= Discourse.base_url %>"
+    },
+    "geo": {
+      "@type": "Place",
+      "name": "<%= @city %>",
+      "addressLocality": "<%= @city %>",
+      "addressCountry": "GB"
+    }
+  }
+  </script>
+<% end %>
+
+<div class="company-directory-container">
+  <nav class="breadcrumb">
+    <%= link_to "Directory", "/directory" %> &gt;
+    <span><%= @city %> <%= @category %>s</span>
+  </nav>
+
+  <header class="city-category-header">
+    <h1><%= @city %> <%= @category %>s</h1>
+    <p>
+      Find professional <%= @category.downcase %>s in <%= @city %>. 
+      Browse portfolios, compare packages, and connect with local photography experts.
+    </p>
+    <div class="page-stats">
+      <span><%= pluralize(@total_count, 'photographer') %> found</span>
+    </div>
+  </header>
+
+  <% if @listings.any? %>
+    <div class="listings-container">
+      <% featured_listings = @listings.select(&:featured?) %>
+      <% regular_listings = @listings.reject(&:featured?) %>
+
+      <% if featured_listings.any? %>
+        <section class="featured-listings">
+          <h2>Featured <%= @category %>s</h2>
+          <div class="business-listings">
+            <% featured_listings.each do |listing| %>
+              <%= render partial: 'listing_card', locals: { listing: listing, featured: true } %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <% if regular_listings.any? %>
+        <section class="regular-listings">
+          <% unless featured_listings.any? %>
+            <h2><%= @category %>s in <%= @city %></h2>
+          <% end %>
+          <div class="business-listings">
+            <% regular_listings.each do |listing| %>
+              <%= render partial: 'listing_card', locals: { listing: listing, featured: false } %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <% if @has_more %>
+        <div class="pagination-container">
+          <%= link_to "Load More", "#{request.path}?page=#{@current_page + 1}", class: "btn btn-default load-more" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="no-listings">
+      <%= icon('camera', class: 'no-listings-icon') %>
+      <h3>No <%= @category %>s found in <%= @city %></h3>
+      <p>Be the first photographer to list your services in this category!</p>
+      <% if current_user&.can_create_business_listing? %>
+        <%= link_to "Create Your Listing", "/my-business", class: "btn btn-primary" %>
+      <% else %>
+        <%= link_to "Get Started", "/s", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <section class="city-category-info">
+    <h2>About <%= @category %> Services in <%= @city %></h2>
+    <div class="info-content">
+      <p>
+        Looking for professional <%= @category.downcase %> services in <%= @city %>? 
+        Our directory features verified photographers who specialize in <%= @category.downcase %> 
+        and serve the <%= @city %> area.
+      </p>
+      
+      <div class="benefits">
+        <h3>Why Choose Local <%= @category %>s?</h3>
+        <ul>
+          <li>Familiar with the best <%= @city %> locations for photography</li>
+          <li>No travel costs or accommodation fees</li>
+          <li>Available for last-minute bookings</li>
+          <li>Can recommend other local vendors</li>
+          <li>Personal service and ongoing relationships</li>
+        </ul>
+      </div>
+
+      <div class="how-to-choose">
+        <h3>How to Choose the Right <%= @category %></h3>
+        <ul>
+          <li>Review their portfolio for style and quality</li>
+          <li>Read client testimonials and reviews</li>
+          <li>Compare packages and pricing</li>
+          <li>Check availability for your dates</li>
+          <li>Meet or speak with them before booking</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%# Partial for listing card %>
+<% content_for :listing_card do |listing, featured| %>
+  <div class="business-listing-card <%= 'featured' if featured %>">
+    <% if featured %>
+      <div class="featured-badge">
+        <%= icon('star') %> Featured
+      </div>
+    <% end %>
+
+    <div class="business-listing-header">
+      <div class="listing-main-info">
+        <h3 class="business-listing-title">
+          <%= link_to listing.business_name, listing.profile_url %>
+        </h3>
+        <div class="business-listing-category"><%= listing.category %></div>
+      </div>
+      <div class="listing-location">
+        <%= icon('map-marker-alt') %> <%= listing.city %>
+      </div>
+    </div>
+
+    <div class="business-listing-description">
+      <%= simple_format(truncate(listing.description, length: 200)) %>
+    </div>
+
+    <% if listing.image_urls.any? %>
+      <div class="business-listing-images">
+        <% listing.image_urls.first(3).each do |image_url| %>
+          <img src="<%= image_url %>" alt="<%= listing.business_name %>" class="business-listing-image" loading="lazy">
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="business-listing-meta">
+      <% if listing.website.present? %>
+        <a href="<%= listing.website %>" target="_blank" rel="noopener" class="website-link">
+          <%= icon('globe') %> Website
+        </a>
+      <% end %>
+
+      <div class="views-count">
+        <%= icon('eye') %> <%= listing.views_count %> views
+      </div>
+
+      <div class="listing-actions">
+        <%= link_to "View Profile", listing.profile_url, class: "btn btn-primary btn-small" %>
+      </div>
+    </div>
+  </div>
+<% end %>

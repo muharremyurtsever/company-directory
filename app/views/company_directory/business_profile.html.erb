@@ -1,0 +1,229 @@
+<%
+  content_for :title, @listing.seo_title
+  content_for :head do
+%>
+  <meta name="description" content="<%= @listing.seo_description %>">
+  <meta property="og:title" content="<%= @listing.seo_title %>">
+  <meta property="og:description" content="<%= @listing.seo_description %>">
+  <meta property="og:url" content="<%= @canonical_url %>">
+  <meta property="og:type" content="business.business">
+  <% if @listing.image_urls.any? %>
+    <meta property="og:image" content="<%= @listing.image_urls.first %>">
+  <% end %>
+  <link rel="canonical" href="<%= @canonical_url %>">
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "<%= @listing.business_name %>",
+    "description": "<%= @listing.description %>",
+    "url": "<%= @listing.website %>",
+    <% if @listing.image_urls.any? %>
+    "image": [
+      <% @listing.image_urls.each_with_index do |image_url, index| %>
+        "<%= image_url %>"<%= index < @listing.image_urls.length - 1 ? ',' : '' %>
+      <% end %>
+    ],
+    <% end %>
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "<%= @listing.city %>",
+      "addressCountry": "GB"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "addressLocality": "<%= @listing.city %>"
+    },
+    <% if @listing.phone.present? %>
+    "telephone": "<%= @listing.phone %>",
+    <% end %>
+    <% if @listing.email.present? %>
+    "email": "<%= @listing.email %>",
+    <% end %>
+    "priceRange": "$$",
+    "serviceType": "<%= @listing.category %>",
+    "areaServed": {
+      "@type": "City",
+      "name": "<%= @listing.city %>"
+    }
+  }
+  </script>
+<% end %>
+
+<div class="company-directory-container">
+  <nav class="breadcrumb">
+    <%= link_to "Directory", "/directory" %> &gt;
+    <%= link_to "#{@listing.city} #{@listing.category}s", @listing.city_category_page_url %> &gt;
+    <span><%= @listing.business_name %></span>
+  </nav>
+
+  <div class="business-profile">
+    <header class="business-header">
+      <div class="business-title-section">
+        <h1 class="business-name"><%= @listing.business_name %></h1>
+        <div class="business-meta">
+          <span class="category">
+            <%= icon('camera') %> <%= @listing.category %>
+          </span>
+          <span class="location">
+            <%= icon('map-marker-alt') %> <%= @listing.city %>
+          </span>
+          <% if @listing.featured? %>
+            <span class="featured-badge">
+              <%= icon('star') %> Featured
+            </span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="business-actions">
+        <% @listing.contact_methods.each do |method| %>
+          <% if method[:type] == 'email' %>
+            <a href="mailto:<%= method[:value] %>" class="btn btn-primary contact-btn">
+              <%= icon('envelope') %> Email
+            </a>
+          <% elsif method[:type] == 'phone' %>
+            <a href="tel:<%= method[:value] %>" class="btn btn-secondary contact-btn">
+              <%= icon('phone') %> Call
+            </a>
+          <% elsif method[:type] == 'website' %>
+            <a href="<%= method[:value] %>" target="_blank" rel="noopener" class="btn btn-secondary contact-btn">
+              <%= icon('globe') %> Website
+            </a>
+          <% end %>
+        <% end %>
+
+        <% if current_user %>
+          <%= link_to "Send Message", "/u/#{@listing.user.username}/messages", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </header>
+
+    <div class="business-content">
+      <div class="main-content">
+        <section class="about-section">
+          <h2>About</h2>
+          <p class="business-description"><%= simple_format(@listing.description) %></p>
+        </section>
+
+        <% if @listing.image_urls.any? %>
+          <section class="portfolio-section">
+            <h2>Portfolio</h2>
+            <div class="portfolio-gallery">
+              <% @listing.image_urls.each_with_index do |image_url, index| %>
+                <div class="portfolio-item">
+                  <img src="<%= image_url %>" alt="<%= @listing.business_name %> portfolio image <%= index + 1 %>" loading="lazy">
+                </div>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+
+        <% if @listing.formatted_packages.any? %>
+          <section class="packages-section">
+            <h2>Packages & Pricing</h2>
+            <div class="packages-list">
+              <% @listing.formatted_packages.each do |package| %>
+                <div class="package-item">
+                  <div class="package-header">
+                    <h3 class="package-name"><%= package[:name] %></h3>
+                    <% if package[:formatted_price] %>
+                      <div class="package-price"><%= package[:formatted_price] %></div>
+                    <% end %>
+                  </div>
+                  <% if package[:description] %>
+                    <p class="package-description"><%= simple_format(package[:description]) %></p>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+
+      <aside class="sidebar-content">
+        <div class="contact-card">
+          <h3>Contact Information</h3>
+          
+          <% if @listing.phone.present? %>
+            <div class="contact-item">
+              <%= icon('phone') %>
+              <a href="tel:<%= @listing.phone %>"><%= @listing.phone %></a>
+            </div>
+          <% end %>
+
+          <% if @listing.email.present? %>
+            <div class="contact-item">
+              <%= icon('envelope') %>
+              <a href="mailto:<%= @listing.email %>"><%= @listing.email %></a>
+            </div>
+          <% end %>
+
+          <div class="contact-item">
+            <%= icon('map-marker-alt') %>
+            <span><%= @listing.city %></span>
+          </div>
+
+          <% if @listing.website.present? %>
+            <div class="contact-item">
+              <%= icon('globe') %>
+              <a href="<%= @listing.website %>" target="_blank" rel="noopener">Visit Website</a>
+            </div>
+          <% end %>
+        </div>
+
+        <% if @listing.social_links.any? %>
+          <div class="social-links-card">
+            <h3>Follow Us</h3>
+            <div class="social-links">
+              <% @listing.social_links.each do |link| %>
+                <a href="<%= link[:url] %>" target="_blank" rel="noopener" class="social-link">
+                  <%= icon(link[:icon]) %> <%= link[:platform] %>
+                </a>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="profile-stats">
+          <div class="stat-item">
+            <%= icon('eye') %>
+            <span><%= @listing.views_count %> views</span>
+          </div>
+          <div class="stat-item">
+            <%= icon('calendar') %>
+            <span>Listed <%= time_ago_in_words(@listing.created_at) %> ago</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <% if @related_listings.any? %>
+    <section class="related-listings">
+      <h2>Other <%= @listing.category %>s in <%= @listing.city %></h2>
+      <div class="related-listings-grid">
+        <% @related_listings.each do |listing| %>
+          <div class="related-listing-card">
+            <% if listing.image_urls.any? %>
+              <div class="listing-image">
+                <img src="<%= listing.image_urls.first %>" alt="<%= listing.business_name %>" loading="lazy">
+              </div>
+            <% end %>
+            <div class="listing-info">
+              <h3><%= link_to listing.business_name, listing.profile_url %></h3>
+              <p><%= truncate(listing.description, length: 100) %></p>
+              <div class="listing-meta">
+                <span><%= icon('map-marker-alt') %> <%= listing.city %></span>
+                <% if listing.featured? %>
+                  <span class="featured">Featured</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,267 @@
+{{#unless site.mobileView}}
+  {{page-title "My Business | ThePhotographers.uk"}}
+{{/unless}}
+
+<div class="company-directory-container">
+  <div class="my-business-header">
+    <h1>{{i18n "company_directory.my_business"}}</h1>
+    
+    {{#if currentUser.can_create_business_listing}}
+      {{#if hasListing}}
+        <p>Manage your business listing in the UK Photography Directory.</p>
+      {{else}}
+        <p>Create your business listing to showcase your photography services to potential clients across the UK.</p>
+      {{/if}}
+    {{else}}
+      <div class="subscription-required">
+        <div class="subscription-message">
+          {{d-icon "lock"}}
+          <h3>{{i18n "company_directory.subscription_required"}}</h3>
+          <p>{{i18n "company_directory.no_subscription"}}</p>
+          {{d-button
+            href="/s"
+            label="company_directory.get_subscription"
+            class="btn-primary"
+          }}
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  {{#if currentUser.can_create_business_listing}}
+    <div class="my-business-form">
+      {{#if saving}}
+        <div class="saving-indicator">
+          {{loading-spinner}} Saving...
+        </div>
+      {{/if}}
+
+      <form {{action "saveListing" on="submit"}}>
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="business-name">{{i18n "company_directory.form.business_name"}}</label>
+              {{text-field
+                id="business-name"
+                value=businessName
+                placeholder=(i18n "company_directory.form.business_name_placeholder")
+                required=true
+              }}
+            </div>
+            
+            <div class="form-field">
+              <label for="city">{{i18n "company_directory.form.city"}}</label>
+              {{combo-box
+                id="city"
+                content=cities
+                value=selectedCity
+                placeholderKey="company_directory.form.city"
+                required=true
+              }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="category">{{i18n "company_directory.form.category"}}</label>
+              {{combo-box
+                id="category"
+                content=categories
+                value=selectedCategory
+                placeholderKey="company_directory.form.category"
+                required=true
+              }}
+            </div>
+          </div>
+
+          <div class="form-row full-width">
+            <div class="form-field">
+              <label for="description">{{i18n "company_directory.form.description"}}</label>
+              {{textarea
+                id="description"
+                value=description
+                placeholder=(i18n "company_directory.form.description_placeholder")
+                maxlength=500
+                required=true
+              }}
+              <div class="char-counter">
+                {{description.length}}/500 characters
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Contact Information</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="website">{{i18n "company_directory.form.website"}}</label>
+              {{text-field
+                id="website"
+                value=website
+                placeholder=(i18n "company_directory.form.website_placeholder")
+                type="url"
+              }}
+            </div>
+            
+            <div class="form-field">
+              <label for="email">{{i18n "company_directory.form.email"}}</label>
+              {{text-field
+                id="email"
+                value=email
+                type="email"
+              }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="phone">{{i18n "company_directory.form.phone"}}</label>
+              {{text-field
+                id="phone"
+                value=phone
+                type="tel"
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Social Media</h3>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="instagram">{{i18n "company_directory.form.instagram"}}</label>
+              {{text-field
+                id="instagram"
+                value=instagram
+                placeholder=(i18n "company_directory.form.instagram_placeholder")
+                type="url"
+              }}
+            </div>
+            
+            <div class="form-field">
+              <label for="facebook">{{i18n "company_directory.form.facebook"}}</label>
+              {{text-field
+                id="facebook"
+                value=facebook
+                placeholder=(i18n "company_directory.form.facebook_placeholder")
+                type="url"
+              }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="tiktok">{{i18n "company_directory.form.tiktok"}}</label>
+              {{text-field
+                id="tiktok"
+                value=tiktok
+                placeholder=(i18n "company_directory.form.tiktok_placeholder")
+                type="url"
+              }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Portfolio Images</h3>
+          <p>{{i18n "company_directory.form.images_help" max=maxImages}}</p>
+          
+          <div class="image-upload-area" {{action "triggerImageUpload"}}>
+            {{d-icon "cloud-upload-alt"}}
+            <p>{{i18n "company_directory.form.drag_drop_images"}}</p>
+            <input type="file" multiple accept="image/*" style="display: none;" {{action "handleImageUpload" on="change"}}>
+          </div>
+
+          {{#if uploadedImages}}
+            <div class="uploaded-images">
+              {{#each uploadedImages as |image index|}}
+                <div class="uploaded-image">
+                  <img src={{image.url}} alt="Portfolio image {{index}}">
+                  <button type="button" class="remove-image" {{action "removeImage" index}}>
+                    {{d-icon "times"}}
+                  </button>
+                </div>
+              {{/each}}
+            </div>
+          {{/if}}
+        </div>
+
+        <div class="form-section">
+          <h3>Service Packages</h3>
+          
+          {{#each packages as |package index|}}
+            <div class="package-item">
+              <div class="package-header">
+                <h4>Package {{add index 1}}</h4>
+                {{d-button
+                  action=(action "removePackage" index)
+                  label="company_directory.form.remove_package"
+                  class="btn-danger btn-small"
+                }}
+              </div>
+              
+              <div class="form-row">
+                <div class="form-field">
+                  <label>{{i18n "company_directory.form.package_name"}}</label>
+                  {{text-field
+                    value=package.name
+                    placeholder=(i18n "company_directory.form.package_name_placeholder")
+                  }}
+                </div>
+                
+                <div class="form-field">
+                  <label>{{i18n "company_directory.form.package_price"}}</label>
+                  {{text-field
+                    value=package.price
+                    placeholder=(i18n "company_directory.form.package_price_placeholder")
+                    type="number"
+                    step="0.01"
+                  }}
+                </div>
+              </div>
+              
+              <div class="form-row full-width">
+                <div class="form-field">
+                  <label>{{i18n "company_directory.form.package_description"}}</label>
+                  {{textarea
+                    value=package.description
+                    placeholder=(i18n "company_directory.form.package_description_placeholder")
+                  }}
+                </div>
+              </div>
+            </div>
+          {{/each}}
+
+          {{d-button
+            action=(action "addPackage")
+            label="company_directory.form.add_package"
+            class="btn-default"
+          }}
+        </div>
+
+        <div class="form-actions">
+          {{d-button
+            type="submit"
+            label="company_directory.form.save"
+            class="btn-primary"
+            disabled=saving
+          }}
+          
+          {{#if hasListing}}
+            {{d-button
+              action=(action "deleteListing")
+              label="company_directory.form.delete_listing"
+              class="btn-danger"
+              disabled=saving
+            }}
+          {{/if}}
+        </div>
+      </form>
+    </div>
+  {{/if}}
+</div>
