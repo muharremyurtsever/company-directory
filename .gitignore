@@ -1,0 +1,52 @@
+# Discourse Plugin .gitignore
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.project
+.idea/
+.vscode/
+
+# Ruby/Rails specific
+*.gem
+*.rbc
+/.config
+/coverage/
+/spec/tmp
+/pkg/
+/tmp/
+
+# Logs
+/log/*
+*.log
+
+# Test files
+/test/tmp/
+/test/version_tmp/
+
+# Documentation
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+# Bundler
+.bundle/
+vendor/bundle
+
+# Environment files
+.env
+.env.*
+
+# Node modules (if using any)
+node_modules/
