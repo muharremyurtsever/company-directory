@@ -3,7 +3,7 @@
 class SitemapController < ApplicationController
   requires_plugin 'company-directory'
   
-  skip_before_action :check_xhr, :redirect_to_login_if_required
+  skip_before_action :redirect_to_login_if_required
   
   def company_directory
     unless SiteSetting.company_directory_enabled && SiteSetting.company_directory_show_in_sitemap
