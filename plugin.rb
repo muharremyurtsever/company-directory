@@ -14,9 +14,9 @@ module ::CompanyDirectory
   PLUGIN_ROOT = File.expand_path(__dir__)
 end
 
-gem "ruby-vips", "2.2.0"
 gem "mini_magick", "4.12.0"
 gem "image_processing", "1.12.2"
+gem "ruby-vips", "~> 2.2"
 
 enabled_site_setting :company_directory_enabled
 
