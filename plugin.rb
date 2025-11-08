@@ -92,17 +92,9 @@ after_initialize do
   end
 
   # Register scheduled jobs
-  if Rails.env.production?
-    every(1.day) do
-      Jobs.enqueue(:deactivate_expired_listings)
-      Jobs.enqueue(:reactivate_renewed_listings)
-    end
-    
-    every(1.week) do
-      Jobs.enqueue(:generate_city_category_pages)
-      Jobs.enqueue(:update_sitemap_entries)
-    end
-  end
+  # NOTE: Scheduled jobs are registered in their respective job classes
+  # (app/jobs/scheduled/*.rb) using the `every` method within the job class itself
+  # The inline `every` syntax here is deprecated in modern Discourse versions
 
   # Add to admin menu
   add_admin_route 'company_directory.title', 'company-directory'
