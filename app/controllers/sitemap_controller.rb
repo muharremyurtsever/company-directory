@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SitemapController < ApplicationController
-  requires_plugin 'discourse-company-directory'
+  requires_plugin 'company-directory'
   
   skip_before_action :check_xhr, :redirect_to_login_if_required
   

@@ -99,6 +99,3 @@ class CompanyDirectorySitemap
     end
   end
 end
-
-# Register the sitemap on plugin initialization
-CompanyDirectorySitemap.register! if defined?(DiscourseEvent)

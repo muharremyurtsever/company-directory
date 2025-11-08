@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Admin::CompanyDirectoryController < Admin::AdminController
-  requires_plugin 'discourse-company-directory'
+  requires_plugin 'company-directory'
   
   before_action :ensure_staff
   before_action :find_listing, only: [:update_listing, :delete_listing]
@@ -145,7 +145,9 @@ class Admin::CompanyDirectoryController < Admin::AdminController
       company_directory_show_in_sitemap: SiteSetting.company_directory_show_in_sitemap,
       company_directory_featured_limit: SiteSetting.company_directory_featured_limit,
       company_directory_locations: SiteSetting.company_directory_locations,
-      company_directory_categories: SiteSetting.company_directory_categories
+      company_directory_categories: SiteSetting.company_directory_categories,
+      company_directory_send_expiry_notifications: SiteSetting.company_directory_send_expiry_notifications,
+      company_directory_send_reactivation_notifications: SiteSetting.company_directory_send_reactivation_notifications
     }
     
     respond_to do |format|
@@ -295,7 +297,9 @@ class Admin::CompanyDirectoryController < Admin::AdminController
       :company_directory_show_in_sitemap,
       :company_directory_featured_limit,
       :company_directory_locations,
-      :company_directory_categories
+      :company_directory_categories,
+      :company_directory_send_expiry_notifications,
+      :company_directory_send_reactivation_notifications
     )
   end
   

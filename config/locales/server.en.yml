@@ -8,6 +8,8 @@ en:
     company_directory_featured_limit: "Featured listings limit"
     company_directory_locations: "Available locations"
     company_directory_categories: "Available categories"
+    company_directory_send_expiry_notifications: "Send expiry notifications"
+    company_directory_send_reactivation_notifications: "Send reactivation notifications"
   
   company_directory:
     title: "Company Directory"
@@ -84,10 +86,12 @@ en:
       title: "Company Directory"
       listings: "Business Listings"
       settings: "Settings"
+      overview: "Overview"
       total_listings: "Total Listings"
       active_listings: "Active Listings"
       inactive_listings: "Inactive Listings"
       featured_listings: "Featured Listings"
+      settings_hint: "Use the form below to adjust directory behavior. Changes apply immediately."
       
       listing:
         business_name: "Business Name"
@@ -100,6 +104,8 @@ en:
         active: "Active"
         inactive: "Inactive"
         featured: "Featured"
+        recent: "Recent signups"
+        total: "Total results: %{count}"
         approve: "Approve"
         feature: "Feature"
         unfeature: "Unfeature"
@@ -126,3 +132,25 @@ en:
         packages: "Packages"
         is_active: "Active"
         featured: "Featured"
+
+  system_messages:
+    company_directory_listing_expired:
+      subject_template: "Your directory listing has been paused"
+      text_body_template: |
+        Hello %{username},
+
+        Your directory listing for **%{business_name}** has been paused because we couldn't detect an active subscription.
+
+        Reactivate your listing by renewing your subscription: %{renewal_url}
+
+        If you believe this was a mistake, please contact the site staff.
+    company_directory_listing_reactivated:
+      subject_template: "Your directory listing is live again"
+      text_body_template: |
+        Hello %{username},
+
+        Great news! Your directory listing for **%{business_name}** is active again.
+
+        View your public profile: %{listing_url}
+
+        Manage your listing at any time here: %{manage_url}

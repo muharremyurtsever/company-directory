@@ -2,30 +2,30 @@
   content_for :title, @page_title
   content_for :head do
 %>
-  <meta name="description" content="<%= @page_description %>">
-  <meta property="og:title" content="<%= @page_title %>">
-  <meta property="og:description" content="<%= @page_description %>">
-  <meta property="og:url" content="<%= @canonical_url %>">
+  <meta name="description" content="<%= h(@page_description) %>">
+  <meta property="og:title" content="<%= h(@page_title) %>">
+  <meta property="og:description" content="<%= h(@page_description) %>">
+  <meta property="og:url" content="<%= h(@canonical_url) %>">
   <meta property="og:type" content="website">
-  <link rel="canonical" href="<%= @canonical_url %>">
+  <link rel="canonical" href="<%= h(@canonical_url) %>">
   
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "<%= @city %> <%= @category %>s",
-    "description": "<%= @page_description %>",
-    "url": "<%= @canonical_url %>",
+    "name": "<%= json_escape("#{@city} #{@category}s") %>",
+    "description": "<%= json_escape(@page_description) %>",
+    "url": "<%= json_escape(@canonical_url) %>",
     "numberOfItems": <%= @total_count %>,
     "provider": {
       "@type": "Organization",
       "name": "ThePhotographers.uk",
-      "url": "<%= Discourse.base_url %>"
+      "url": "<%= json_escape(Discourse.base_url) %>"
     },
     "geo": {
       "@type": "Place",
-      "name": "<%= @city %>",
-      "addressLocality": "<%= @city %>",
+      "name": "<%= json_escape(@city) %>",
+      "addressLocality": "<%= json_escape(@city) %>",
       "addressCountry": "GB"
     }
   }
@@ -130,54 +130,3 @@
     </div>
   </section>
 </div>
-
-<%# Partial for listing card %>
-<% content_for :listing_card do |listing, featured| %>
-  <div class="business-listing-card <%= 'featured' if featured %>">
-    <% if featured %>
-      <div class="featured-badge">
-        <%= icon('star') %> Featured
-      </div>
-    <% end %>
-
-    <div class="business-listing-header">
-      <div class="listing-main-info">
-        <h3 class="business-listing-title">
-          <%= link_to listing.business_name, listing.profile_url %>
-        </h3>
-        <div class="business-listing-category"><%= listing.category %></div>
-      </div>
-      <div class="listing-location">
-        <%= icon('map-marker-alt') %> <%= listing.city %>
-      </div>
-    </div>
-
-    <div class="business-listing-description">
-      <%= simple_format(truncate(listing.description, length: 200)) %>
-    </div>
-
-    <% if listing.image_urls.any? %>
-      <div class="business-listing-images">
-        <% listing.image_urls.first(3).each do |image_url| %>
-          <img src="<%= image_url %>" alt="<%= listing.business_name %>" class="business-listing-image" loading="lazy">
-        <% end %>
-      </div>
-    <% end %>
-
-    <div class="business-listing-meta">
-      <% if listing.website.present? %>
-        <a href="<%= listing.website %>" target="_blank" rel="noopener" class="website-link">
-          <%= icon('globe') %> Website
-        </a>
-      <% end %>
-
-      <div class="views-count">
-        <%= icon('eye') %> <%= listing.views_count %> views
-      </div>
-
-      <div class="listing-actions">
-        <%= link_to "View Profile", listing.profile_url, class: "btn btn-primary btn-small" %>
-      </div>
-    </div>
-  </div>
-<% end %>

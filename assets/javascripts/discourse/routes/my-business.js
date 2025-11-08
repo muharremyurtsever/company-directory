@@ -17,6 +17,7 @@ export default class MyBusinessRoute extends Route {
       
       return {
         listing: data.listing,
+        has_listing: data.has_listing,
         can_create: data.can_create,
         config: data.config
       };

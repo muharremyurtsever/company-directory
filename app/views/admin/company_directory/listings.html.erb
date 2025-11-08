@@ -1,0 +1,40 @@
+<div class="admin-company-directory">
+  <h1><%= I18n.t("company_directory.admin.listings") %></h1>
+
+  <p>
+    <%= I18n.t("company_directory.admin.listing.total", default: "Total results: %{count}", count: @total_count) %>
+  </p>
+
+  <table class="admin-company-directory__table">
+    <thead>
+      <tr>
+        <th><%= I18n.t("company_directory.admin.listing.business_name") %></th>
+        <th><%= I18n.t("company_directory.admin.listing.user") %></th>
+        <th><%= I18n.t("company_directory.admin.listing.city") %></th>
+        <th><%= I18n.t("company_directory.admin.listing.category") %></th>
+        <th><%= I18n.t("company_directory.admin.listing.status") %></th>
+        <th><%= I18n.t("company_directory.admin.listing.created") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @listings.each do |listing| %>
+        <tr>
+          <td><%= listing.business_name %></td>
+          <td><%= listing.user.username %></td>
+          <td><%= listing.city %></td>
+          <td><%= listing.category %></td>
+          <td>
+            <% if listing.featured? %>
+              <%= I18n.t("company_directory.admin.listing.featured") %>
+            <% elsif listing.is_active? %>
+              <%= I18n.t("company_directory.admin.listing.active") %>
+            <% else %>
+              <%= I18n.t("company_directory.admin.listing.inactive") %>
+            <% end %>
+          </td>
+          <td><%= l(listing.created_at, format: :short) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

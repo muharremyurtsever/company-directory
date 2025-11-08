@@ -30,6 +30,14 @@ plugins:
     max: 20
     description: "Maximum number of featured listings per city/category page"
 
+  company_directory_send_expiry_notifications:
+    default: false
+    description: "Send users a system message when their listing is deactivated automatically"
+
+  company_directory_send_reactivation_notifications:
+    default: false
+    description: "Send users a system message when their listing is reactivated automatically"
+
   company_directory_locations:
     type: list
     list_type: simple

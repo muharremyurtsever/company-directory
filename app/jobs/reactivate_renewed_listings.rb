@@ -14,7 +14,7 @@ module Jobs
       reactivated_count = 0
       
       # Find all inactive listings where user now has active subscription
-      BusinessListing.inactive.includes(:user).each do |listing|
+      BusinessListing.inactive.includes(:user).find_each(batch_size: 200) do |listing|
         if listing.user_has_active_subscription?
           listing.update!(is_active: true)
           reactivated_count += 1

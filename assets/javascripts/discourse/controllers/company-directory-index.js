@@ -4,7 +4,6 @@ import { tracked } from "@glimmer/tracking";
 import { inject as service } from "@ember/service";
 
 export default class CompanyDirectoryIndexController extends Controller {
-  @service router;
   @service appEvents;
   
   @tracked listings = [];
@@ -34,24 +33,24 @@ export default class CompanyDirectoryIndexController extends Controller {
   }
 
   get hasFilters() {
-    return this.selectedCity || this.selectedCategory || this.searchQuery;
+    return Boolean(this.selectedCity || this.selectedCategory || this.searchQuery);
   }
 
   @action
   async filterByCity(city) {
     this.selectedCity = city;
-    await this.loadListings(true);
+    await this.loadListings({ reset: true });
   }
 
   @action
   async filterByCategory(category) {
     this.selectedCategory = category;
-    await this.loadListings(true);
+    await this.loadListings({ reset: true });
   }
 
   @action
   async search() {
-    await this.loadListings(true);
+    await this.loadListings({ reset: true });
   }
 
   @action
@@ -59,7 +58,7 @@ export default class CompanyDirectoryIndexController extends Controller {
     this.selectedCity = null;
     this.selectedCategory = null;
     this.searchQuery = "";
-    await this.loadListings(true);
+    await this.loadListings({ reset: true });
   }
 
   @action
@@ -67,10 +66,8 @@ export default class CompanyDirectoryIndexController extends Controller {
     if (this.loadingMore || !this.hasMore) return;
     
     this.loadingMore = true;
-    this.currentPage += 1;
-    
     try {
-      await this.loadListings(false);
+      await this.loadListings({ page: this.currentPage + 1 });
     } finally {
       this.loadingMore = false;
     }
@@ -78,10 +75,15 @@ export default class CompanyDirectoryIndexController extends Controller {
 
   @action
   viewProfile(listing) {
-    this.router.transitionTo(listing.profile_url);
+    if (listing?.profile_url) {
+      window.location.assign(listing.profile_url);
+    }
   }
 
-  async loadListings(reset = false) {
+  async loadListings({ reset = false, page = null } = {}) {
+    const previousPage = this.currentPage;
+    const targetPage = reset ? 1 : page || this.currentPage;
+
     if (reset) {
       this.currentPage = 1;
       this.loading = true;
@@ -89,31 +91,57 @@ export default class CompanyDirectoryIndexController extends Controller {
 
     try {
       const params = {
-        page: this.currentPage,
+        page: targetPage,
         city: this.selectedCity,
         category: this.selectedCategory,
         search: this.searchQuery
       };
 
-      const response = await this.store.query('business-listing', params);
-      
+      const data = await this.fetchListings(params);
+      const newListings = data.listings || [];
+      const pagination = data.pagination || {};
+
       if (reset) {
-        this.listings = response.content;
+        this.listings = newListings;
       } else {
-        this.listings = [...this.listings, ...response.content];
+        this.listings = [...this.listings, ...newListings];
       }
-
-      this.totalCount = response.pagination.total_count;
-      this.hasMore = response.pagination.has_more;
-
+      
+      this.totalCount = pagination.total_count || 0;
+      this.hasMore = Boolean(pagination.has_more);
+      this.currentPage = targetPage;
     } catch (error) {
       this.appEvents.trigger("modal-body:flash", {
-        text: this.t("generic_error"),
+        text: error.message || this.t("generic_error"),
         messageClass: "error"
       });
+      if (!reset) {
+        this.currentPage = previousPage;
+      }
     } finally {
-      this.loading = false;
+      if (reset) {
+        this.loading = false;
+      }
     }
+  }
+
+  async fetchListings(params) {
+    const searchParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) {
+        searchParams.append(key, value);
+      }
+    });
+
+    const queryString = searchParams.toString();
+    const response = await fetch(`/directory.json${queryString ? `?${queryString}` : ""}`);
+
+    if (!response.ok) {
+      throw new Error("Unable to load directory listings");
+    }
+
+    return response.json();
   }
 
   t(key, params = {}) {

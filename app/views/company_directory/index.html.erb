@@ -1,0 +1,119 @@
+<%
+  content_for :title, @page_title
+  content_for :head do
+%>
+  <meta name="description" content="<%= h(@page_description) %>">
+  <link rel="canonical" href="<%= h(@canonical_url) %>">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "<%= json_escape(@page_title) %>",
+    "description": "<%= json_escape(@page_description) %>",
+    "url": "<%= json_escape(@canonical_url) %>",
+    "numberOfItems": <%= @total_count %>
+  }
+  </script>
+<% end %>
+
+<div class="company-directory-container">
+  <header class="directory-header">
+    <h1>UK Photography Directory</h1>
+    <p><%= h(@page_description) %></p>
+    <div class="directory-meta">
+      <span><%= pluralize(@total_count, 'photographer') %> listed</span>
+      <% if current_user&.can_create_business_listing? %>
+        <%= link_to "Manage My Listing", "/my-business", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </header>
+
+  <section class="directory-filters">
+    <%= form_tag("/directory", method: :get, class: "directory-filter-form") do %>
+      <div class="filter-group">
+        <label for="directory-city">City</label>
+        <%= select_tag :city,
+                        options_for_select([["All Cities", ""]] + @cities.map { |city| [city, city] }, @selected_city),
+                        id: "directory-city",
+                        class: "directory-filter-select" %>
+      </div>
+
+      <div class="filter-group">
+        <label for="directory-category">Category</label>
+        <%= select_tag :category,
+                        options_for_select([["All Categories", ""]] + @categories.map { |category| [category, category] }, @selected_category),
+                        id: "directory-category",
+                        class: "directory-filter-select" %>
+      </div>
+
+      <div class="search-group">
+        <label for="directory-search" class="sr-only">Search</label>
+        <%= text_field_tag :search, @search_query, placeholder: "Search photographers...", id: "directory-search", class: "directory-search-input" %>
+        <%= submit_tag "Apply Filters", class: "btn btn-primary directory-search-btn" %>
+      </div>
+
+      <% if @selected_city.present? || @selected_category.present? || @search_query.present? %>
+        <div class="filter-actions">
+          <%= link_to "Clear filters", "/directory", class: "btn btn-default" %>
+        </div>
+      <% end %>
+    <% end %>
+  </section>
+
+  <% if @listings.any? %>
+    <%
+      featured_listings = @listings.select(&:featured?).first(@featured_limit)
+      regular_listings = @listings.reject(&:featured?)
+      pagination_params = {}
+      pagination_params[:city] = @selected_city if @selected_city.present?
+      pagination_params[:category] = @selected_category if @selected_category.present?
+      pagination_params[:search] = @search_query if @search_query.present?
+    %>
+
+    <% if featured_listings.any? %>
+      <section class="featured-listings">
+        <h2>Featured photographers</h2>
+        <div class="business-listings">
+          <% featured_listings.each do |listing| %>
+            <%= render partial: "listing_card", locals: { listing: listing, featured: true } %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <% if regular_listings.any? %>
+      <section class="regular-listings">
+        <h2>All photographers</h2>
+        <div class="business-listings">
+          <% regular_listings.each do |listing| %>
+            <%= render partial: "listing_card", locals: { listing: listing, featured: false } %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <% if @total_pages > 1 %>
+      <nav class="pagination-container">
+        <% if @current_page > 1 %>
+          <% prev_params = pagination_params.merge(page: @current_page - 1) %>
+          <% prev_query = prev_params.any? ? "?#{prev_params.to_query}" : "" %>
+          <%= link_to "Previous", "/directory#{prev_query}", class: "btn btn-default" %>
+        <% end %>
+        <% if @current_page < @total_pages %>
+          <% next_params = pagination_params.merge(page: @current_page + 1) %>
+          <% next_query = next_params.any? ? "?#{next_params.to_query}" : "" %>
+          <%= link_to "Next", "/directory#{next_query}", class: "btn btn-default" %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="no-listings">
+      <%= icon('camera', class: 'no-listings-icon') %>
+      <h3>No photographers found</h3>
+      <p>Try adjusting your filters or check back soon for new listings.</p>
+      <% if current_user&.can_create_business_listing? %>
+        <%= link_to "Create Your Listing", "/my-business", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,47 +1,46 @@
 # frozen_string_literal: true
 
-# name: discourse-company-directory
+# name: company-directory
 # about: UK Company Directory Plugin with Paid Subscription Integration and SEO Pages
 # meta_topic_id: TODO
 # version: 1.0.0
 # authors: ThePhotographers.uk Team
 # url: https://github.com/trbozo/company-directory
-# required_version: 3.1.0
+# required_version: 3.3.0
 # transpile_js: true
 
+module ::CompanyDirectory
+  PLUGIN_NAME = "company-directory"
+  PLUGIN_ROOT = File.expand_path(__dir__)
+end
+
+gem "mini_magick", "~> 4.12"
 gem "image_processing", "1.12.2"
 
 enabled_site_setting :company_directory_enabled
 
 register_asset 'stylesheets/company-directory.scss'
 
-# Register plugin settings
-[
-  :company_directory_enabled,
-  :company_directory_subscription_plan_id,
-  :company_directory_auto_approve,
-  :company_directory_max_images,
-  :company_directory_show_in_sitemap,
-  :company_directory_featured_limit,
-  :company_directory_locations,
-  :company_directory_categories
-].each do |setting|
-  SETTINGS << setting
-end
-
 after_initialize do
-  # Load all plugin files
-  Dir["#{Rails.root}/plugins/discourse-company-directory/app/**/*.rb"].each { |f| load f }
+  # Load plugin files
+  Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
+  Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "lib/**/*.rb")).each { |f| load f }
   
   # Add custom routes
-  Discourse::Application.routes.append do
-    get '/directory' => 'company_directory#index'
-    get '/directory/:city_category' => 'company_directory#city_category_page', constraints: { city_category: /[^\/]+/ }
-    get '/directory/:city_category/:slug' => 'company_directory#business_profile', constraints: { city_category: /[^\/]+/, slug: /[^\/]+/ }
-    get '/my-business' => 'company_directory#my_business'
-    post '/my-business' => 'company_directory#create_business'
-    put '/my-business/:id' => 'company_directory#update_business'
-    delete '/my-business/:id' => 'company_directory#delete_business'
+  directory_constraint = ->(_request) { SiteSetting.company_directory_enabled }
+
+  directory_routes = proc do
+    constraints(directory_constraint) do
+      get '/directory' => 'company_directory#index'
+      get '/directory/:city_category' => 'company_directory#city_category_page', constraints: { city_category: /[^\/]+/ }
+      get '/directory/:city_category/:slug' => 'company_directory#business_profile', constraints: { city_category: /[^\/]+/, slug: /[^\/]+/ }
+      get '/my-business' => 'company_directory#my_business'
+      post '/my-business' => 'company_directory#create_business'
+      put '/my-business/:id' => 'company_directory#update_business'
+      delete '/my-business/:id' => 'company_directory#delete_business'
+    end
+
+    get '/company-directory-sitemap' => 'sitemap#company_directory', defaults: { format: :xml }
     
     # Admin routes
     scope '/admin/plugins' do
@@ -52,6 +51,23 @@ after_initialize do
       get '/company-directory/settings' => 'admin/company_directory#settings'
       put '/company-directory/settings' => 'admin/company_directory#update_settings'
     end
+  end
+  Discourse::Application.routes.prepend(&directory_routes)
+
+  if respond_to?(:register_sitemap_generator)
+    register_sitemap_generator("company_directory") do |sitemap|
+      CompanyDirectorySitemap.generate_sitemap_entries.each do |entry|
+        loc = "#{Discourse.base_url}#{entry[:url]}"
+        sitemap.add(
+          loc,
+          priority: entry[:priority],
+          changefreq: entry[:changefreq],
+          lastmod: entry[:lastmod]
+        )
+      end
+    end
+  elsif defined?(CompanyDirectorySitemap)
+    CompanyDirectorySitemap.register!
   end
 
   # Add navigation item for logged-in users
@@ -124,6 +140,12 @@ after_initialize do
       # Deactivate all listings for this user
       BusinessListing.where(user_id: user.id, is_active: true)
                     .update_all(is_active: false, updated_at: Time.current)
+    end
+  end
+
+  reloadable_patch do
+    User.class_eval do
+      has_many :business_listings, dependent: :destroy
     end
   end
 end

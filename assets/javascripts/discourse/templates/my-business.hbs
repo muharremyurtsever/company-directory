@@ -174,7 +174,7 @@
           <div class="image-upload-area" {{action "triggerImageUpload"}}>
             {{d-icon "cloud-upload-alt"}}
             <p>{{i18n "company_directory.form.drag_drop_images"}}</p>
-            <input type="file" multiple accept="image/*" style="display: none;" {{action "handleImageUpload" on="change"}}>
+            <input id="company-directory-image-upload" type="file" multiple accept="image/*" style="display: none;" {{action "handleImageUpload" on="change"}}>
           </div>
 
           {{#if uploadedImages}}

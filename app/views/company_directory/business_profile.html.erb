@@ -2,23 +2,23 @@
   content_for :title, @listing.seo_title
   content_for :head do
 %>
-  <meta name="description" content="<%= @listing.seo_description %>">
-  <meta property="og:title" content="<%= @listing.seo_title %>">
-  <meta property="og:description" content="<%= @listing.seo_description %>">
-  <meta property="og:url" content="<%= @canonical_url %>">
+  <meta name="description" content="<%= h(@listing.seo_description) %>">
+  <meta property="og:title" content="<%= h(@listing.seo_title) %>">
+  <meta property="og:description" content="<%= h(@listing.seo_description) %>">
+  <meta property="og:url" content="<%= h(@canonical_url) %>">
   <meta property="og:type" content="business.business">
   <% if @listing.image_urls.any? %>
     <meta property="og:image" content="<%= @listing.image_urls.first %>">
   <% end %>
-  <link rel="canonical" href="<%= @canonical_url %>">
+  <link rel="canonical" href="<%= h(@canonical_url) %>">
   
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "<%= @listing.business_name %>",
-    "description": "<%= @listing.description %>",
-    "url": "<%= @listing.website %>",
+    "name": "<%= json_escape(@listing.business_name) %>",
+    "description": "<%= json_escape(@listing.description) %>",
+    "url": "<%= json_escape(@listing.website) %>",
     <% if @listing.image_urls.any? %>
     "image": [
       <% @listing.image_urls.each_with_index do |image_url, index| %>
@@ -28,24 +28,24 @@
     <% end %>
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "<%= @listing.city %>",
+      "addressLocality": "<%= json_escape(@listing.city) %>",
       "addressCountry": "GB"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "addressLocality": "<%= @listing.city %>"
+      "addressLocality": "<%= json_escape(@listing.city) %>"
     },
     <% if @listing.phone.present? %>
-    "telephone": "<%= @listing.phone %>",
+    "telephone": "<%= json_escape(@listing.phone) %>",
     <% end %>
     <% if @listing.email.present? %>
-    "email": "<%= @listing.email %>",
+    "email": "<%= json_escape(@listing.email) %>",
     <% end %>
     "priceRange": "$$",
-    "serviceType": "<%= @listing.category %>",
+    "serviceType": "<%= json_escape(@listing.category) %>",
     "areaServed": {
       "@type": "City",
-      "name": "<%= @listing.city %>"
+      "name": "<%= json_escape(@listing.city) %>"
     }
   }
   </script>
@@ -104,7 +104,7 @@
       <div class="main-content">
         <section class="about-section">
           <h2>About</h2>
-          <p class="business-description"><%= simple_format(@listing.description) %></p>
+          <p class="business-description"><%= directory_rich_text(@listing.description) %></p>
         </section>
 
         <% if @listing.image_urls.any? %>
@@ -133,7 +133,7 @@
                     <% end %>
                   </div>
                   <% if package[:description] %>
-                    <p class="package-description"><%= simple_format(package[:description]) %></p>
+                    <p class="package-description"><%= directory_rich_text(package[:description]) %></p>
                   <% end %>
                 </div>
               <% end %>
@@ -213,7 +213,7 @@
             <% end %>
             <div class="listing-info">
               <h3><%= link_to listing.business_name, listing.profile_url %></h3>
-              <p><%= truncate(listing.description, length: 100) %></p>
+              <p><%= directory_rich_text(listing.description, truncate_at: 100) %></p>
               <div class="listing-meta">
                 <span><%= icon('map-marker-alt') %> <%= listing.city %></span>
                 <% if listing.featured? %>

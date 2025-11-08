@@ -14,7 +14,7 @@ module Jobs
       expired_count = 0
       
       # Find all active listings
-      BusinessListing.active.includes(:user).each do |listing|
+      BusinessListing.active.includes(:user).find_each(batch_size: 200) do |listing|
         unless listing.user_has_active_subscription?
           listing.update!(is_active: false)
           expired_count += 1

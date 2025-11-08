@@ -1,0 +1,44 @@
+<div class="admin-company-directory">
+  <h1><%= I18n.t("company_directory.admin.title") %></h1>
+
+  <section class="admin-company-directory__stats">
+    <h2><%= I18n.t("company_directory.admin.overview", default: "Overview") %></h2>
+    <ul>
+      <li><strong><%= I18n.t("company_directory.admin.total_listings") %>:</strong> <%= @stats[:total_listings] %></li>
+      <li><strong><%= I18n.t("company_directory.admin.active_listings") %>:</strong> <%= @stats[:active_listings] %></li>
+      <li><strong><%= I18n.t("company_directory.admin.inactive_listings") %>:</strong> <%= @stats[:inactive_listings] %></li>
+      <li><strong><%= I18n.t("company_directory.admin.featured_listings") %>:</strong> <%= @stats[:featured_listings] %></li>
+      <li><strong><%= I18n.t("company_directory.admin.listing.recent", default: "Recent signups") %>:</strong> <%= @stats[:recent_signups] %></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><%= I18n.t("company_directory.admin.listings") %></h2>
+    <table class="admin-company-directory__table">
+      <thead>
+        <tr>
+          <th><%= I18n.t("company_directory.admin.listing.business_name") %></th>
+          <th><%= I18n.t("company_directory.admin.listing.user") %></th>
+          <th><%= I18n.t("company_directory.admin.listing.city") %></th>
+          <th><%= I18n.t("company_directory.admin.listing.category") %></th>
+          <th><%= I18n.t("company_directory.admin.listing.status") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_listings.each do |listing| %>
+          <tr>
+            <td><%= listing.business_name %></td>
+            <td><%= listing.user.username %></td>
+            <td><%= listing.city %></td>
+            <td><%= listing.category %></td>
+            <td><%= listing.is_active? ? I18n.t("company_directory.admin.listing.active") : I18n.t("company_directory.admin.listing.inactive") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+
+  <p class="admin-company-directory__hint">
+    <%= I18n.t("company_directory.admin.settings_hint", default: "Use the JSON endpoints or the settings page below for full management functionality.") %>
+  </p>
+</div>

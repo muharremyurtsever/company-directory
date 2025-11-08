@@ -1,0 +1,57 @@
+<div class="admin-company-directory">
+  <h1><%= I18n.t("company_directory.admin.settings") %></h1>
+
+  <%= form_with url: "/admin/plugins/company-directory/settings", method: :put, local: true do %>
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_enabled") %></label>
+      <%= select_tag "settings[company_directory_enabled]", options_for_select([["false", false], ["true", true]], @settings[:company_directory_enabled].to_s), class: "select-kit" %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_subscription_plan_id") %></label>
+      <%= text_field_tag "settings[company_directory_subscription_plan_id]", @settings[:company_directory_subscription_plan_id] %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_auto_approve") %></label>
+      <%= select_tag "settings[company_directory_auto_approve]", options_for_select([["false", false], ["true", true]], @settings[:company_directory_auto_approve].to_s), class: "select-kit" %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_max_images") %></label>
+      <%= number_field_tag "settings[company_directory_max_images]", @settings[:company_directory_max_images], min: 1 %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_show_in_sitemap") %></label>
+      <%= select_tag "settings[company_directory_show_in_sitemap]", options_for_select([["false", false], ["true", true]], @settings[:company_directory_show_in_sitemap].to_s), class: "select-kit" %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_featured_limit") %></label>
+      <%= number_field_tag "settings[company_directory_featured_limit]", @settings[:company_directory_featured_limit], min: 1 %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_locations") %></label>
+      <%= text_area_tag "settings[company_directory_locations]", @settings[:company_directory_locations], rows: 6 %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_categories") %></label>
+      <%= text_area_tag "settings[company_directory_categories]", @settings[:company_directory_categories], rows: 4 %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_send_expiry_notifications") %></label>
+      <%= select_tag "settings[company_directory_send_expiry_notifications]", options_for_select([["false", false], ["true", true]], @settings[:company_directory_send_expiry_notifications].to_s), class: "select-kit" %>
+    </div>
+
+    <div class="form-group">
+      <label><%= I18n.t("site_settings.company_directory_send_reactivation_notifications") %></label>
+      <%= select_tag "settings[company_directory_send_reactivation_notifications]", options_for_select([["false", false], ["true", true]], @settings[:company_directory_send_reactivation_notifications].to_s), class: "select-kit" %>
+    </div>
+
+    <%= submit_tag I18n.t("save"), class: "btn btn-primary" %>
+  <% end %>
+</div>

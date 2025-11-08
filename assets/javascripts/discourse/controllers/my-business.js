@@ -36,13 +36,13 @@ export default class MyBusinessController extends Controller {
   }
 
   get hasListing() {
-    return this.model.listing?.has_listing === true;
+    return this.model.has_listing || this.model.listing?.has_listing === true;
   }
 
   setupController(controller, model) {
     super.setupController(controller, model);
     
-    if (model.listing && model.listing.has_listing) {
+    if (model.has_listing && model.listing) {
       // Populate form with existing listing data
       this.populateFormFromListing(model.listing);
     }
@@ -115,7 +115,7 @@ export default class MyBusinessController extends Controller {
 
   @action
   triggerImageUpload() {
-    document.querySelector('input[type="file"]').click();
+    document.getElementById("company-directory-image-upload")?.click();
   }
 
   @action

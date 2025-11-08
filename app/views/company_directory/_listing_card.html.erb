@@ -1,0 +1,47 @@
+<div class="business-listing-card <%= 'featured' if featured %>">
+  <% if featured %>
+    <div class="featured-badge">
+      <%= icon('star') %> Featured
+    </div>
+  <% end %>
+
+  <div class="business-listing-header">
+    <div class="listing-main-info">
+      <h3 class="business-listing-title">
+        <%= link_to listing.business_name, listing.profile_url %>
+      </h3>
+      <div class="business-listing-category"><%= listing.category %></div>
+    </div>
+    <div class="listing-location">
+      <%= icon('map-marker-alt') %> <%= listing.city %>
+    </div>
+  </div>
+
+  <div class="business-listing-description">
+    <%= directory_rich_text(listing.description, truncate_at: 200) %>
+  </div>
+
+  <% if listing.image_urls.any? %>
+    <div class="business-listing-images">
+      <% listing.image_urls.first(3).each do |image_url| %>
+        <img src="<%= image_url %>" alt="<%= listing.business_name %>" class="business-listing-image" loading="lazy">
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="business-listing-meta">
+    <% if listing.website.present? %>
+      <a href="<%= listing.website %>" target="_blank" rel="noopener" class="website-link">
+        <%= icon('globe') %> Website
+      </a>
+    <% end %>
+
+    <div class="views-count">
+      <%= icon('eye') %> <%= listing.views_count %> views
+    </div>
+
+    <div class="listing-actions">
+      <%= link_to "View Profile", listing.profile_url, class: "btn btn-primary btn-small" %>
+    </div>
+  </div>
+</div>

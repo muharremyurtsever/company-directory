@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CompanyDirectoryController < ApplicationController
-  requires_plugin 'discourse-company-directory'
+  requires_plugin 'company-directory'
   
   before_action :ensure_logged_in, only: [:my_business, :create_business, :update_business, :delete_business]
   before_action :ensure_directory_enabled
@@ -9,8 +9,8 @@ class CompanyDirectoryController < ApplicationController
   before_action :ensure_can_manage_listing, only: [:update_business, :delete_business]
   
   def index
-    @cities = SiteSetting.company_directory_locations.split("\n").map(&:strip).sort
-    @categories = SiteSetting.company_directory_categories.split("\n").map(&:strip).sort
+    @cities = available_cities.sort
+    @categories = available_categories.sort
     
     # Get filter params
     city_filter = params[:city]
@@ -18,6 +18,9 @@ class CompanyDirectoryController < ApplicationController
     search_query = params[:search]
     page = [params[:page].to_i, 1].max
     per_page = 20
+    @selected_city = city_filter.presence
+    @selected_category = category_filter.presence
+    @search_query = search_query
     
     # Build query
     listings = BusinessListing.visible.includes(:user)
@@ -29,18 +32,21 @@ class CompanyDirectoryController < ApplicationController
     @listings = listings.ordered_for_display
                        .offset((page - 1) * per_page)
                        .limit(per_page)
+                       .to_a
     
     @total_count = listings.count
     @current_page = page
-    @total_pages = (@total_count.to_f / per_page).ceil
+    @total_pages = [(@total_count.to_f / per_page).ceil, 1].max
     @has_more = page < @total_pages
+    @featured_limit = SiteSetting.company_directory_featured_limit
     
     # For SEO
     @page_title = "UK Photography Directory | ThePhotographers.uk"
     @page_description = "Find professional photographers across the UK. Browse portfolios, compare services, and connect with local photography experts."
+    @canonical_url = request.original_url.split('?').first
     
     respond_to do |format|
-      format.html
+      format.html { render :index }
       format.json do
         render json: {
           listings: @listings.map { |listing| serialize_listing(listing) },
@@ -75,7 +81,7 @@ class CompanyDirectoryController < ApplicationController
     city_parts = []
     
     # Find where category starts (look for known categories)
-    allowed_categories = SiteSetting.company_directory_categories.split("\n").map(&:strip)
+    allowed_categories = available_categories
     category_found = false
     
     parts.reverse.each do |part|
@@ -96,7 +102,7 @@ class CompanyDirectoryController < ApplicationController
     @category = category_parts.join(' ').titleize
     
     # Validate city and category
-    allowed_cities = SiteSetting.company_directory_locations.split("\n").map(&:strip)
+    allowed_cities = available_cities
     return render_404 unless allowed_cities.include?(@city)
     return render_404 unless allowed_categories.include?(@category)
     
@@ -109,10 +115,11 @@ class CompanyDirectoryController < ApplicationController
                               .ordered_for_display
                               .offset((page - 1) * per_page)
                               .limit(per_page)
+                              .to_a
     
     @total_count = BusinessListing.for_seo_page(@city, @category).count
     @current_page = page
-    @total_pages = (@total_count.to_f / per_page).ceil
+    @total_pages = [(@total_count.to_f / per_page).ceil, 1].max
     @has_more = page < @total_pages
     
     # SEO data
@@ -190,15 +197,18 @@ class CompanyDirectoryController < ApplicationController
     @listing = current_user.business_listings.active.first
     @can_create = current_user.can_create_business_listing?
     
-    @cities = SiteSetting.company_directory_locations.split("\n").map(&:strip).sort
-    @categories = SiteSetting.company_directory_categories.split("\n").map(&:strip).sort
+    @cities = available_cities.sort
+    @categories = available_categories.sort
     @max_images = SiteSetting.company_directory_max_images
     
     respond_to do |format|
-      format.html
+      format.html do
+        render template: "default/empty", layout: "application"
+      end
       format.json do
         render json: {
           listing: @listing ? serialize_listing_detailed(@listing) : nil,
+          has_listing: @listing.present?,
           can_create: @can_create,
           config: {
             cities: @cities,
@@ -344,11 +354,24 @@ class CompanyDirectoryController < ApplicationController
       created_at: listing.created_at,
       views_count: listing.views_count,
       is_active: listing.is_active?,
-      approved: listing.approved?
+      approved: listing.approved?,
+      has_listing: true
     }
   end
   
   def render_404
     raise ActionController::RoutingError.new('Not Found')
+  end
+
+  def available_cities
+    @available_cities ||= normalized_setting_list(SiteSetting.company_directory_locations)
+  end
+
+  def available_categories
+    @available_categories ||= normalized_setting_list(SiteSetting.company_directory_categories)
+  end
+
+  def normalized_setting_list(raw_value)
+    raw_value.to_s.split("\n").map { |item| item.strip.presence }.compact.uniq
   end
 end

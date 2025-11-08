@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "securerandom"
+
 class BusinessListing < ActiveRecord::Base
   belongs_to :user
   
@@ -154,11 +156,11 @@ class BusinessListing < ActiveRecord::Base
                             .gsub(/\s+/, '-')
                             .strip
                             
-    counter = 1
     slug_candidate = base_slug
+    counter = 1
     
     while BusinessListing.exists?(slug: slug_candidate)
-      slug_candidate = "#{base_slug}-#{counter}"
+      slug_candidate = counter < 10 ? "#{base_slug}-#{counter}" : "#{base_slug}-#{SecureRandom.hex(2)}"
       counter += 1
     end
     
