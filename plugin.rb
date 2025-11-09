@@ -34,6 +34,9 @@ after_initialize do
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "lib/**/*.rb")).each { |f| load f }
 
+  # Register view paths so Discourse can find our templates
+  ActionController::Base.prepend_view_path(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/views"))
+
   # Add custom routes
   directory_constraint = ->(_request) { SiteSetting.company_directory_enabled }
 
