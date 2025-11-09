@@ -17,7 +17,6 @@ end
 enabled_site_setting :company_directory_enabled
 
 register_asset 'stylesheets/company-directory.scss'
-register_asset 'javascripts/discourse/initializers/company-directory.js'
 register_svg_icon "fab-instagram"
 register_svg_icon "fab-facebook"
 register_svg_icon "fab-tiktok"
