@@ -115,10 +115,12 @@ after_initialize do
 
   # Register serializer modifications
   add_to_serializer(:current_user, :can_create_business_listing) do
+    next unless object.is_a?(User)
     object.can_create_business_listing?
   end
 
   add_to_serializer(:current_user, :business_listing) do
+    next unless object.is_a?(User)
     if object.can_create_business_listing?
       listing = BusinessListing.where(user_id: object.id, is_active: true).first
       if listing
