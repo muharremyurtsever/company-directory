@@ -14,13 +14,13 @@ module ::CompanyDirectory
   PLUGIN_ROOT = File.expand_path(__dir__)
 end
 
-gem "ruby-vips", "2.2.5"
-gem "mini_magick", "4.12.0"
-gem "image_processing", "1.12.2"
-
 enabled_site_setting :company_directory_enabled
 
 register_asset 'stylesheets/company-directory.scss'
+register_svg_icon "fab-instagram"
+register_svg_icon "fab-facebook"
+register_svg_icon "fab-tiktok"
+register_svg_icon "globe"
 
 after_initialize do
   # ==================================================================================
@@ -82,19 +82,21 @@ after_initialize do
   # Add navigation item for logged-in users
   add_to_class(:user, :can_create_business_listing?) do
     return false unless SiteSetting.company_directory_enabled
-    
+
     # Check if user has active subscription
     if defined?(DiscourseSubscriptions)
       plan_id = SiteSetting.company_directory_subscription_plan_id
       return false if plan_id.blank?
-      
-      subscriptions = DiscourseSubscriptions::Customer.where(user_id: self.id)
-                        .joins("JOIN discourse_subscriptions_subscriptions ON discourse_subscriptions_customers.id = discourse_subscriptions_subscriptions.customer_id")
-                        .where("discourse_subscriptions_subscriptions.status = 'active'")
-      
+
+      subscriptions = DiscourseSubscriptions::Subscription
+                        .joins(:customer)
+                        .where(discourse_subscriptions_customers: { user_id: self.id })
+                        .where(status: 'active')
+                        .where(plan_id: plan_id)
+
       return subscriptions.exists?
     end
-    
+
     # Fallback: check if user is in a specific group
     false
   end

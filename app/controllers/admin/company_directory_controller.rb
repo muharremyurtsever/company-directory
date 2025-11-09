@@ -254,15 +254,20 @@ class Admin::CompanyDirectoryController < Admin::AdminController
   
   # Analytics data
   def analytics
-    # Listings by month
-    listings_by_month = BusinessListing.group_by_month(:created_at, last: 12).count
-    
+    # Listings by month (last 12 months using plain SQL)
+    listings_by_month = BusinessListing
+      .where("created_at >= ?", 12.months.ago)
+      .group("DATE_TRUNC('month', created_at)")
+      .order("DATE_TRUNC('month', created_at)")
+      .count
+      .transform_keys { |k| k.strftime("%B %Y") }
+
     # Listings by city (top 20)
     listings_by_city = BusinessListing.group(:city).count.sort_by(&:last).reverse.first(20)
-    
+
     # Listings by category (top 20)
     listings_by_category = BusinessListing.group(:category).count.sort_by(&:last).reverse.first(20)
-    
+
     # Most viewed listings
     most_viewed = BusinessListing.visible.order(views_count: :desc).limit(10)
     
