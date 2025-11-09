@@ -27,13 +27,13 @@ class CreateBusinessListings < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :business_listings, :user_id unless index_exists?(:business_listings, :user_id)
-    add_index :business_listings, :slug, unique: true unless index_exists?(:business_listings, :slug)
-    add_index :business_listings, [:city, :category] unless index_exists?(:business_listings, [:city, :category])
-    add_index :business_listings, :is_active unless index_exists?(:business_listings, :is_active)
-    add_index :business_listings, :featured unless index_exists?(:business_listings, :featured)
-    add_index :business_listings, :approved unless index_exists?(:business_listings, :approved)
-    add_index :business_listings, [:city, :category, :is_active, :approved] unless index_exists?(:business_listings, [:city, :category, :is_active, :approved])
-    add_index :business_listings, [:featured, :priority, :created_at] unless index_exists?(:business_listings, [:featured, :priority, :created_at])
+    add_index :business_listings, :user_id, name: "idx_bl_user" unless index_exists?(:business_listings, :user_id, name: "idx_bl_user")
+    add_index :business_listings, :slug, unique: true, name: "idx_bl_slug" unless index_exists?(:business_listings, :slug, name: "idx_bl_slug")
+    add_index :business_listings, [:city, :category], name: "idx_bl_city_cat" unless index_exists?(:business_listings, [:city, :category], name: "idx_bl_city_cat")
+    add_index :business_listings, :is_active, name: "idx_bl_active" unless index_exists?(:business_listings, :is_active, name: "idx_bl_active")
+    add_index :business_listings, :featured, name: "idx_bl_featured" unless index_exists?(:business_listings, :featured, name: "idx_bl_featured")
+    add_index :business_listings, :approved, name: "idx_bl_approved" unless index_exists?(:business_listings, :approved, name: "idx_bl_approved")
+    add_index :business_listings, [:city, :category, :is_active, :approved], name: "idx_bl_search" unless index_exists?(:business_listings, [:city, :category, :is_active, :approved], name: "idx_bl_search")
+    add_index :business_listings, [:featured, :priority, :created_at], name: "idx_bl_priority" unless index_exists?(:business_listings, [:featured, :priority, :created_at], name: "idx_bl_priority")
   end
 end
