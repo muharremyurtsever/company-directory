@@ -108,7 +108,6 @@
     <% end %>
   <% else %>
     <div class="no-listings">
-      <%= icon('camera', class: 'no-listings-icon') %>
       <h3>No photographers found</h3>
       <p>Try adjusting your filters or check back soon for new listings.</p>
       <% if current_user&.can_create_business_listing? %>
