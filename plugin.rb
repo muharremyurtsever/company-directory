@@ -96,8 +96,9 @@ after_initialize do
   # (app/jobs/scheduled/*.rb) using the `every` method within the job class itself
   # The inline `every` syntax here is deprecated in modern Discourse versions
 
-  # Add to admin menu
-  add_admin_route 'company_directory.title', 'company-directory'
+  # Admin menu integration disabled - requires proper Ember.js admin route setup
+  # For admin management, access /admin/plugins/company-directory directly via custom routes
+  # add_admin_route 'company_directory.title', 'company-directory'
 
   # Register serializer modifications
   add_to_serializer(:current_user, :can_create_business_listing) do
