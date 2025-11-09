@@ -4,6 +4,7 @@ require "securerandom"
 
 class BusinessListing < ActiveRecord::Base
   belongs_to :user
+  has_many :upload_references, as: :target, dependent: :destroy
   
   validates :business_name, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 500 }

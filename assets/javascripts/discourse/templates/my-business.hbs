@@ -1,0 +1,202 @@
+<div class="company-directory-my-business">
+  {{#if this.canCreate}}
+    <h1>{{i18n "company_directory.my_business"}}</h1>
+
+    {{#if this.successMessage}}
+      <div class="alert alert-success">{{this.successMessage}}</div>
+    {{/if}}
+
+    {{#if this.errors}}
+      <div class="alert alert-error">
+        <ul>
+          {{#each this.errors as |error|}}
+            <li>{{error}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    {{/if}}
+
+    <form class="company-directory-form" {{on "submit" this.saveListing}}>
+      <div class="form-row">
+        <label>{{i18n "company_directory.form.business_name"}}</label>
+        <input
+          type="text"
+          value={{this.form.business_name}}
+          placeholder={{i18n "company_directory.form.business_name_placeholder"}}
+          maxlength="100"
+          required
+          {{on "input" (fn this.updateField "business_name")}}
+        >
+      </div>
+
+      <div class="form-row">
+        <label>{{i18n "company_directory.form.description"}}</label>
+        <textarea
+          placeholder={{i18n "company_directory.form.description_placeholder"}}
+          maxlength="500"
+          rows="5"
+          required
+          {{on "input" (fn this.updateField "description")}}
+        >{{this.form.description}}</textarea>
+      </div>
+
+      <div class="form-row split">
+        <div>
+          <label>{{i18n "company_directory.form.city"}}</label>
+          <select value={{this.form.city}} required {{on "change" (fn this.updateField "city")}}>
+            <option value="">{{i18n "company_directory.directory.all_cities"}}</option>
+            {{#each this.cities as |city|}}
+              <option value={{city}} selected={{eq city this.form.city}}>{{city}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div>
+          <label>{{i18n "company_directory.form.category"}}</label>
+          <select value={{this.form.category}} required {{on "change" (fn this.updateField "category")}}>
+            <option value="">{{i18n "company_directory.directory.all_categories"}}</option>
+            {{#each this.categories as |category|}}
+              <option value={{category}} selected={{eq category this.form.category}}>{{category}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row split">
+        <div>
+          <label>{{i18n "company_directory.form.website"}}</label>
+          <input
+            type="url"
+            value={{this.form.website}}
+            placeholder={{i18n "company_directory.form.website_placeholder"}}
+            {{on "input" (fn this.updateField "website")}}
+          >
+        </div>
+        <div>
+          <label>{{i18n "company_directory.form.email"}}</label>
+          <input
+            type="email"
+            value={{this.form.email}}
+            placeholder="contact@example.com"
+            {{on "input" (fn this.updateField "email")}}
+          >
+        </div>
+      </div>
+
+      <div class="form-row split">
+        <div>
+          <label>{{i18n "company_directory.form.phone"}}</label>
+          <input
+            type="text"
+            value={{this.form.phone}}
+            placeholder="+44 1234 567890"
+            {{on "input" (fn this.updateField "phone")}}
+          >
+        </div>
+        <div>
+          <label>{{i18n "company_directory.form.instagram"}}</label>
+          <input
+            type="url"
+            value={{this.form.instagram}}
+            placeholder={{i18n "company_directory.form.instagram_placeholder"}}
+            {{on "input" (fn this.updateField "instagram")}}
+          >
+        </div>
+      </div>
+
+      <div class="form-row split">
+        <div>
+          <label>{{i18n "company_directory.form.facebook"}}</label>
+          <input
+            type="url"
+            value={{this.form.facebook}}
+            placeholder={{i18n "company_directory.form.facebook_placeholder"}}
+            {{on "input" (fn this.updateField "facebook")}}
+          >
+        </div>
+        <div>
+          <label>{{i18n "company_directory.form.tiktok"}}</label>
+          <input
+            type="url"
+            value={{this.form.tiktok}}
+            placeholder={{i18n "company_directory.form.tiktok_placeholder"}}
+            {{on "input" (fn this.updateField "tiktok")}}
+          >
+        </div>
+      </div>
+
+      <div class="image-upload-area">
+        <label>{{i18n "company_directory.form.images"}}</label>
+        <p>{{i18n "company_directory.form.images_help" max=this.maxImages}}</p>
+        {{#if this.canAddMoreImages}}
+          <input type="file" accept="image/*" multiple {{on "change" this.handleFileSelection}}>
+        {{else}}
+          <p class="image-limit">{{i18n "company_directory.validation.too_many_images" max=this.maxImages}}</p>
+        {{/if}}
+
+        {{#if this.uploading}}
+          <div class="uploading-indicator">{{i18n "upload_selector.uploading"}}</div>
+        {{/if}}
+
+        <div class="uploaded-images">
+          {{#each this.form.images as |image|}}
+            <div class="uploaded-image">
+              <img src={{image.url}} alt={{image.name}}>
+              <button type="button" class="remove-image" {{on "click" (fn this.removeImage image)}}>&times;</button>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+
+      <section class="packages-section">
+        <div class="section-header">
+          <h2>{{i18n "company_directory.form.packages"}}</h2>
+          <button class="btn" type="button" {{on "click" this.addPackage}}>{{i18n "company_directory.form.add_package"}}</button>
+        </div>
+
+        {{#if this.form.packages.length}}
+          {{#each this.form.packages as |package index|}}
+            <div class="package-item">
+              <div class="form-row">
+                <label>{{i18n "company_directory.form.package_name"}}</label>
+                <input type="text" value={{package.name}} {{on "input" (fn this.updatePackageField index "name")}}>
+              </div>
+              <div class="form-row">
+                <label>{{i18n "company_directory.form.package_description"}}</label>
+                <textarea rows="3" {{on "input" (fn this.updatePackageField index "description")}}>{{package.description}}</textarea>
+              </div>
+              <div class="form-row">
+                <label>{{i18n "company_directory.form.package_price"}}</label>
+                <input type="text" value={{package.price}} {{on "input" (fn this.updatePackageField index "price")}}>
+              </div>
+              <button type="button" class="btn btn-danger" {{on "click" (fn this.removePackage index)}}>{{i18n "company_directory.form.remove_package"}}</button>
+            </div>
+          {{/each}}
+        {{else}}
+          <p class="packages-empty">{{i18n "company_directory.form.package_description_placeholder"}}</p>
+        {{/if}}
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" disabled={{this.saving}}>
+          {{#if this.saving}}
+            {{i18n "saving"}}
+          {{else}}
+            {{i18n "company_directory.form.save"}}
+          {{/if}}
+        </button>
+
+        {{#if this.form.id}}
+          <button type="button" class="btn btn-danger" disabled={{this.deleting}} {{on "click" this.deleteListing}}>
+            {{i18n "company_directory.form.delete_listing"}}
+          </button>
+        {{/if}}
+      </div>
+    </form>
+  {{else}}
+    <div class="company-directory-locked">
+      <h1>{{i18n "company_directory.subscription_required"}}</h1>
+      <p>{{i18n "company_directory.no_subscription"}}</p>
+      <a href="/s" class="btn btn-primary">{{i18n "company_directory.get_subscription"}}</a>
+    </div>
+  {{/if}}
+</div>

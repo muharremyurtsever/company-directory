@@ -17,6 +17,7 @@ end
 enabled_site_setting :company_directory_enabled
 
 register_asset 'stylesheets/company-directory.scss'
+register_asset 'javascripts/discourse/initializers/company-directory.js'
 register_svg_icon "fab-instagram"
 register_svg_icon "fab-facebook"
 register_svg_icon "fab-tiktok"
@@ -47,6 +48,7 @@ after_initialize do
       post '/my-business' => 'company_directory#create_business'
       put '/my-business/:id' => 'company_directory#update_business'
       delete '/my-business/:id' => 'company_directory#delete_business'
+      post '/company-directory/uploads' => 'company_directory#upload_image'
     end
 
     get '/company-directory-sitemap' => 'sitemap#company_directory', defaults: { format: :xml }

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_dependency "upload_creator"
+require_dependency "upload_reference"
+
 class CompanyDirectoryController < ApplicationController
   requires_plugin 'company-directory'
 
@@ -8,7 +11,7 @@ class CompanyDirectoryController < ApplicationController
   skip_before_action :preload_json, only: [:index, :city_category_page, :business_profile, :my_business]
   skip_before_action :redirect_to_login_if_required, only: [:index, :city_category_page, :business_profile]
 
-  before_action :ensure_logged_in, only: [:my_business, :create_business, :update_business, :delete_business]
+  before_action :ensure_logged_in, only: [:my_business, :create_business, :update_business, :delete_business, :upload_image]
   before_action :ensure_directory_enabled
   before_action :find_business_listing, only: [:update_business, :delete_business]
   before_action :ensure_can_manage_listing, only: [:update_business, :delete_business]
@@ -229,17 +232,21 @@ class CompanyDirectoryController < ApplicationController
     unless current_user.can_create_business_listing?
       return render json: { error: I18n.t("company_directory.no_subscription") }, status: 403
     end
-    
+
     # Check if user already has an active listing
     existing_listing = current_user.business_listings.active.first
     if existing_listing
       return render json: { error: "You already have an active business listing" }, status: 422
     end
     
-    @listing = current_user.business_listings.build(listing_params)
+    permitted_params = listing_params
+    image_payload = permitted_params.delete(:images)
+    @listing = current_user.business_listings.build(permitted_params)
+    apply_listing_images(@listing, image_payload)
     @listing.approved = SiteSetting.company_directory_auto_approve
-    
+
     if @listing.save
+      sync_listing_uploads(@listing)
       render json: {
         success: true,
         message: I18n.t("company_directory.listing_created"),
@@ -252,11 +259,15 @@ class CompanyDirectoryController < ApplicationController
       }, status: 422
     end
   end
-  
+
   def update_business
-    @listing.assign_attributes(listing_params)
-    
+    permitted_params = listing_params
+    image_payload = permitted_params.delete(:images)
+    @listing.assign_attributes(permitted_params)
+    apply_listing_images(@listing, image_payload)
+
     if @listing.save
+      sync_listing_uploads(@listing)
       render json: {
         success: true,
         message: I18n.t("company_directory.listing_updated"),
@@ -272,11 +283,38 @@ class CompanyDirectoryController < ApplicationController
   
   def delete_business
     @listing.destroy!
-    
+
     render json: {
       success: true,
       message: I18n.t("company_directory.listing_deleted")
     }
+  end
+
+  def upload_image
+    unless current_user.can_create_business_listing?
+      return render json: { error: I18n.t("company_directory.no_subscription") }, status: 403
+    end
+
+    uploads = Array.wrap(params[:files] || params[:file]).compact
+    raise Discourse::InvalidParameters.new(:file) if uploads.blank?
+
+    created_uploads = uploads.map do |uploaded_file|
+      upload = UploadCreator.new(uploaded_file, uploaded_file.original_filename, type: "company_directory").create_for(current_user.id)
+
+      if upload.errors.present?
+        raise Discourse::InvalidParameters.new(upload.errors.full_messages.join(", "))
+      end
+
+      {
+        id: upload.id,
+        url: upload.url,
+        original_filename: upload.original_filename,
+        width: upload.width,
+        height: upload.height
+      }
+    end
+
+    render json: { uploads: created_uploads }
   end
   
   private
@@ -306,9 +344,54 @@ class CompanyDirectoryController < ApplicationController
       :business_name, :description, :city, :category,
       :website, :instagram, :facebook, :tiktok,
       :email, :phone,
-      images: [],
+      images: [:upload_id],
       packages: [:name, :description, :price]
     )
+  end
+
+  def apply_listing_images(listing, image_payload)
+    return if image_payload.nil?
+
+    listing.images = normalized_images(image_payload)
+  end
+
+  def normalized_images(image_payload)
+    normalized_payload = image_payload.first(SiteSetting.company_directory_max_images)
+    upload_ids = normalized_payload.map { |image| image[:upload_id] || image["upload_id"] }.compact
+    return [] if upload_ids.blank?
+
+    uploads = Upload.where(id: upload_ids).index_by(&:id)
+
+    normalized_payload.map do |image|
+      upload = uploads[image[:upload_id]&.to_i || image["upload_id"]&.to_i]
+      next unless upload
+
+      {
+        "upload_id" => upload.id,
+        "url" => upload.url,
+        "original_filename" => upload.original_filename,
+        "width" => upload.width,
+        "height" => upload.height
+      }
+    end.compact
+  end
+
+  def sync_listing_uploads(listing)
+    upload_ids = Array.wrap(listing.images).map { |image| image["upload_id"] }.compact
+
+    if upload_ids.empty?
+      UploadReference.where(target: listing).destroy_all
+      return
+    end
+
+    UploadReference.where(target: listing).where.not(upload_id: upload_ids).destroy_all
+
+    upload_ids.each do |upload_id|
+      UploadReference.find_or_create_by!(target: listing, upload_id: upload_id) do |ref|
+        ref.user_id = listing.user_id
+        ref.origin = "company_directory"
+      end
+    end
   end
   
   def serialize_listing(listing)
@@ -362,7 +445,8 @@ class CompanyDirectoryController < ApplicationController
       views_count: listing.views_count,
       is_active: listing.is_active?,
       approved: listing.approved?,
-      has_listing: true
+      has_listing: true,
+      images: listing.images || []
     }
   end
   
