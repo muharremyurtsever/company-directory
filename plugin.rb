@@ -22,6 +22,11 @@ enabled_site_setting :company_directory_enabled
 
 register_asset 'stylesheets/company-directory.scss'
 
+# Make site settings available to JavaScript
+register_site_setting_for_client(:company_directory_enabled)
+register_site_setting_for_client(:company_directory_max_images)
+register_site_setting_for_client(:company_directory_auto_approve)
+
 after_initialize do
   # Load plugin files
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
