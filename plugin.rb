@@ -34,6 +34,11 @@ after_initialize do
   # Load plugin files
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "lib/**/*.rb")).each { |f| load f }
+
+  # Include helper in ApplicationController so it's available in all views
+  ApplicationController.class_eval do
+    helper CompanyDirectoryHelper
+  end
   
   # Add custom routes
   directory_constraint = ->(_request) { SiteSetting.company_directory_enabled }
