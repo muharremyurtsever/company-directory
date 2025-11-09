@@ -1,0 +1,338 @@
+<%
+  content_for :title, "My Business Listing"
+  content_for :head do
+%>
+  <meta name="robots" content="noindex, nofollow">
+<% end %>
+
+<div class="company-directory-container">
+  <header class="directory-header">
+    <h1>My Business Listing</h1>
+    <p>Manage your photography business listing in the UK Directory</p>
+  </header>
+
+  <% unless @can_create %>
+    <div class="subscription-required">
+      <div class="subscription-message">
+        <div class="no-listings-icon">🔒</div>
+        <h3>Subscription Required</h3>
+        <p>You need an active subscription to create and manage a business listing.</p>
+        <%= link_to "View Subscription Plans", "/", class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% else %>
+    <% if @listing %>
+      <!-- Existing Listing -->
+      <div class="business-profile">
+        <div class="business-header">
+          <div class="business-title-section">
+            <h2 class="business-name"><%= @listing.business_name %></h2>
+            <div class="business-meta">
+              <span class="category">
+                📷 <%= @listing.category %>
+              </span>
+              <span class="location">
+                📍 <%= @listing.city %>
+              </span>
+              <% if @listing.featured? %>
+                <span class="featured-badge">
+                  ⭐ Featured
+                </span>
+              <% end %>
+              <% if @listing.approved? %>
+                <span class="status-badge approved">
+                  ✅ Approved
+                </span>
+              <% else %>
+                <span class="status-badge pending">
+                  ⏳ Pending Approval
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="business-actions">
+            <%= link_to "View Public Profile", @listing.profile_url, class: "btn btn-primary", target: "_blank" %>
+          </div>
+        </div>
+
+        <div class="listing-summary">
+          <div class="summary-card">
+            <h3>Listing Information</h3>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <strong>Business Name:</strong>
+                <span><%= @listing.business_name %></span>
+              </div>
+
+              <div class="info-item">
+                <strong>City:</strong>
+                <span><%= @listing.city %></span>
+              </div>
+
+              <div class="info-item">
+                <strong>Category:</strong>
+                <span><%= @listing.category %></span>
+              </div>
+
+              <div class="info-item">
+                <strong>Views:</strong>
+                <span><%= @listing.views_count %> views</span>
+              </div>
+
+              <% if @listing.website.present? %>
+                <div class="info-item">
+                  <strong>Website:</strong>
+                  <span><%= link_to @listing.website, @listing.website, target: "_blank", rel: "noopener" %></span>
+                </div>
+              <% end %>
+
+              <% if @listing.email.present? %>
+                <div class="info-item">
+                  <strong>Email:</strong>
+                  <span><%= @listing.email %></span>
+                </div>
+              <% end %>
+
+              <% if @listing.phone.present? %>
+                <div class="info-item">
+                  <strong>Phone:</strong>
+                  <span><%= @listing.phone %></span>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="description-section">
+              <h4>Description</h4>
+              <p><%= directory_rich_text(@listing.description) %></p>
+            </div>
+
+            <% if @listing.image_urls.any? %>
+              <div class="images-section">
+                <h4>Portfolio Images (<%= @listing.image_urls.count %>)</h4>
+                <div class="business-listing-images">
+                  <% @listing.image_urls.first(6).each do |image_url| %>
+                    <img src="<%= image_url %>" alt="<%= @listing.business_name %>" class="business-listing-image">
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @listing.formatted_packages.any? %>
+              <div class="packages-section">
+                <h4>Packages (<%= @listing.formatted_packages.count %>)</h4>
+                <div class="packages-list">
+                  <% @listing.formatted_packages.each do |package| %>
+                    <div class="package-item-summary">
+                      <strong><%= package[:name] %></strong>
+                      <% if package[:formatted_price] %>
+                        <span class="package-price"><%= package[:formatted_price] %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="management-notice">
+          <p>
+            📝 <strong>Note:</strong> To edit your listing, please contact the site administrator or use the API endpoint at
+            <code>PUT /my-business/<%= @listing.id %></code>
+          </p>
+          <p>
+            For advanced management features, consider implementing a JavaScript-based management interface.
+          </p>
+        </div>
+      </div>
+    <% else %>
+      <!-- No Listing Yet -->
+      <div class="no-listings">
+        <div class="no-listings-icon">📸</div>
+        <h3>You don't have a business listing yet</h3>
+        <p>Create your photography business listing to appear in the UK Photography Directory.</p>
+
+        <div class="create-notice">
+          <p>
+            📝 To create a listing, please use the API endpoint: <code>POST /my-business</code>
+          </p>
+          <p>
+            Or contact the site administrator to add your business manually.
+          </p>
+          <p class="mt-2">
+            <%= link_to "Browse Directory", "/directory", class: "btn btn-primary" %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<style>
+.subscription-required {
+  padding: 3rem 1rem;
+}
+
+.subscription-message {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 3rem;
+  border: 1px solid var(--primary-low);
+  border-radius: 12px;
+  background: var(--tertiary-very-low);
+  text-align: center;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &.approved {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  &.pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+}
+
+.listing-summary {
+  margin-top: 2rem;
+}
+
+.summary-card {
+  background: var(--secondary);
+  border: 1px solid var(--primary-low);
+  border-radius: 12px;
+  padding: 2rem;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--primary);
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    margin: 1.5rem 0 1rem 0;
+    color: var(--primary);
+    font-size: 1.2rem;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  strong {
+    color: var(--primary-medium);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  span {
+    color: var(--primary);
+    font-size: 1rem;
+  }
+}
+
+.description-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--tertiary-very-low);
+  border-radius: 8px;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--primary);
+  }
+}
+
+.images-section {
+  margin: 2rem 0;
+}
+
+.packages-section {
+  margin: 2rem 0;
+}
+
+.package-item-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--tertiary-very-low);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+
+  strong {
+    color: var(--primary);
+  }
+
+  .package-price {
+    color: var(--tertiary);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+}
+
+.management-notice {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--highlight-bg);
+  border: 1px solid var(--primary-low);
+  border-radius: 8px;
+
+  p {
+    margin: 0.5rem 0;
+    color: var(--primary-medium);
+  }
+
+  code {
+    background: var(--secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--tertiary);
+  }
+}
+
+.create-notice {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: var(--tertiary-very-low);
+  border-radius: 8px;
+
+  p {
+    margin: 0.75rem 0;
+    color: var(--primary-medium);
+  }
+
+  .mt-2 {
+    margin-top: 1.5rem;
+  }
+
+  code {
+    background: var(--secondary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: var(--tertiary);
+    font-weight: 600;
+  }
+}
+</style>

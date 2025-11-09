@@ -204,15 +204,13 @@ class CompanyDirectoryController < ApplicationController
   def my_business
     @listing = current_user.business_listings.active.first
     @can_create = current_user.can_create_business_listing?
-    
+
     @cities = available_cities.sort
     @categories = available_categories.sort
     @max_images = SiteSetting.company_directory_max_images
-    
+
     respond_to do |format|
-      format.html do
-        render template: "default/empty", layout: "no_ember"
-      end
+      format.html { render :my_business, layout: "no_ember" }
       format.json do
         render json: {
           listing: @listing ? serialize_listing_detailed(@listing) : nil,
