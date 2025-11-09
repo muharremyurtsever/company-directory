@@ -11,24 +11,25 @@ export default {
       return;
     }
 
-    withPluginApi("1.8.0", api => {
-      // Add directory icon to header using modern API
-      api.headerIcons.add("directory", {
-        href: "/directory",
-        title: "Company Directory",
-        icon: "camera",
-        text: "Directory"
-      });
+    // Temporarily disabled - navigation can be added manually
+    // withPluginApi("1.8.0", api => {
+    //   // Add directory icon to header using modern API
+    //   api.headerIcons.add("directory", {
+    //     href: "/directory",
+    //     title: "Company Directory",
+    //     icon: "camera",
+    //     text: "Directory"
+    //   });
 
-      // Add my business link to user menu using modern API
-      api.addQuickAccessProfileItem({
-        icon: "briefcase",
-        href: "/my-business",
-        content: "My Business",
-        condition() {
-          return api.getCurrentUser()?.can_create_business_listing;
-        }
-      });
-    });
+    //   // Add my business link to user menu using modern API
+    //   api.addQuickAccessProfileItem({
+    //     icon: "briefcase",
+    //     href: "/my-business",
+    //     content: "My Business",
+    //     condition() {
+    //       return api.getCurrentUser()?.can_create_business_listing;
+    //     }
+    //   });
+    // });
   }
 };
