@@ -58,7 +58,7 @@ class BusinessListing < ActiveRecord::Base
   end
   
   def city_category_slug
-    "#{city.downcase.gsub(/[^a-z0-9]+/, '-')}-#{category.downcase.gsub(/[^a-z0-9]+/, '-')}"
+    "#{city.downcase.gsub(/[^a-z0-9]+/, '-')}-#{category.downcase.gsub(/[^a-z0-9]+/, '-')}-photographers"
   end
   
   def profile_url

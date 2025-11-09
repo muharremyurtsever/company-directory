@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'cgi'
+
 class CompanyDirectorySitemap
   def self.register!
     # Register with Discourse's sitemap system
@@ -82,7 +85,7 @@ class CompanyDirectorySitemap
     return unless Rails.env.production?
     return unless SiteSetting.company_directory_enabled
 
-    sitemap_url = "#{Discourse.base_url}/company-directory-sitemap.xml"
+    sitemap_url = "#{Discourse.base_url}/company-directory-sitemap"
     
     # Ping Google
     begin

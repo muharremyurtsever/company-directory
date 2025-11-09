@@ -291,11 +291,13 @@ class CompanyDirectoryController < ApplicationController
     @listing = current_user.business_listings.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Listing not found" }, status: 404
+    return false
   end
-  
+
   def ensure_can_manage_listing
     unless @listing&.user == current_user || current_user.staff?
       render json: { error: "Unauthorized" }, status: 403
+      return false
     end
   end
   
