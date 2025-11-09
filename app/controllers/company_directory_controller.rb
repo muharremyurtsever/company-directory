@@ -295,6 +295,9 @@ class CompanyDirectoryController < ApplicationController
       return render json: { error: I18n.t("company_directory.no_subscription") }, status: 403
     end
 
+    # Rate limiting to prevent spam uploads
+    RateLimiter.new(current_user, "company_directory_upload", 10, 1.minute).performed!
+
     uploads = Array.wrap(params[:files] || params[:file]).compact
     raise Discourse::InvalidParameters.new(:file) if uploads.blank?
 

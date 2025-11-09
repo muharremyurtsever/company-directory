@@ -2,7 +2,6 @@
 
 # name: company-directory
 # about: UK Company Directory Plugin with Paid Subscription Integration and SEO Pages (Discourse 2025 / Rails 8 Compatible)
-# meta_topic_id: TODO
 # version: 2.0.0
 # authors: ThePhotographers.uk Team
 # url: https://github.com/muharremyurtsever/company-directory
@@ -35,11 +34,6 @@ after_initialize do
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "lib/**/*.rb")).each { |f| load f }
 
-  # Include helper in ApplicationController so it's available in all views
-  ApplicationController.class_eval do
-    helper CompanyDirectoryHelper
-  end
-  
   # Add custom routes
   directory_constraint = ->(_request) { SiteSetting.company_directory_enabled }
 
@@ -55,7 +49,7 @@ after_initialize do
       post '/company-directory/uploads' => 'company_directory#upload_image'
     end
 
-    get '/company-directory-sitemap' => 'sitemap#company_directory', defaults: { format: :xml }
+    get '/company-directory-sitemap' => 'company_directory/sitemap#company_directory', defaults: { format: :xml }
     
     # Admin routes
     scope '/admin/plugins' do
@@ -88,6 +82,9 @@ after_initialize do
   # Add navigation item for logged-in users
   add_to_class(:user, :can_create_business_listing?) do
     return false unless SiteSetting.company_directory_enabled
+
+    # Staff bypass for testing and administration
+    return true if self.staff?
 
     # Check if user has active subscription
     if defined?(DiscourseSubscriptions)
@@ -154,6 +151,11 @@ after_initialize do
   end
 
   reloadable_patch do
+    # Include helper in ApplicationController so it's available in all views
+    ApplicationController.class_eval do
+      helper CompanyDirectoryHelper
+    end
+
     User.class_eval do
       has_many :business_listings, dependent: :destroy
     end

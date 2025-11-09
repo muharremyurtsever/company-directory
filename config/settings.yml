@@ -1,7 +1,7 @@
 plugins:
   company_directory_enabled:
     client: true
-    default: true
+    default: false
     description: "Enable the Company Directory plugin"
   
   company_directory_subscription_plan_id:
