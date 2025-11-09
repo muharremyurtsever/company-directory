@@ -148,27 +148,172 @@
         </div>
       </div>
     <% else %>
-      <!-- No Listing Yet -->
-      <div class="no-listings">
-        <div class="no-listings-icon">📸</div>
-        <h3>You don't have a business listing yet</h3>
-        <p>Create your photography business listing to appear in the UK Photography Directory.</p>
-
-        <div class="create-notice">
-          <p>
-            📝 To create a listing, please use the API endpoint: <code>POST /my-business</code>
-          </p>
-          <p>
-            Or contact the site administrator to add your business manually.
-          </p>
-          <p class="mt-2">
-            <%= link_to "Browse Directory", "/directory", class: "btn btn-primary" %>
-          </p>
+      <!-- No Listing Yet - Show Create Form -->
+      <div class="create-listing-section">
+        <div class="form-intro">
+          <div class="no-listings-icon">📸</div>
+          <h3>Create Your Business Listing</h3>
+          <p>Fill out the form below to add your photography business to the UK Directory.</p>
         </div>
+
+        <%= form_with(url: "/my-business", method: :post, class: "my-business-form", id: "create-listing-form") do |f| %>
+          <div class="form-section">
+            <h3>Basic Information</h3>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="business_name">Business Name *</label>
+                <%= text_field_tag "business_listing[business_name]", nil, required: true, placeholder: "e.g. John Smith Photography" %>
+              </div>
+
+              <div class="form-field">
+                <label for="category">Category *</label>
+                <%= select_tag "business_listing[category]", options_for_select(@categories), required: true, prompt: "Select a category" %>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="city">City *</label>
+                <%= select_tag "business_listing[city]", options_for_select(@cities), required: true, prompt: "Select a city" %>
+              </div>
+
+              <div class="form-field">
+                <label for="website">Website</label>
+                <%= text_field_tag "business_listing[website]", nil, type: "url", placeholder: "https://yourwebsite.com" %>
+              </div>
+            </div>
+
+            <div class="form-row full-width">
+              <div class="form-field">
+                <label for="description">Description *</label>
+                <%= text_area_tag "business_listing[description]", nil, required: true, placeholder: "Describe your photography services...", maxlength: 500 %>
+                <div class="char-counter"><span id="desc-count">0</span>/500</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Contact Information</h3>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="email">Email</label>
+                <%= email_field_tag "business_listing[email]", nil, placeholder: "contact@yourbusiness.com" %>
+              </div>
+
+              <div class="form-field">
+                <label for="phone">Phone</label>
+                <%= telephone_field_tag "business_listing[phone]", nil, placeholder: "+44 123 456 7890" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>Social Media (Optional)</h3>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="instagram">Instagram</label>
+                <%= text_field_tag "business_listing[instagram]", nil, placeholder: "https://instagram.com/yourprofile" %>
+              </div>
+
+              <div class="form-field">
+                <label for="facebook">Facebook</label>
+                <%= text_field_tag "business_listing[facebook]", nil, placeholder: "https://facebook.com/yourpage" %>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="tiktok">TikTok</label>
+                <%= text_field_tag "business_listing[tiktok]", nil, placeholder: "https://tiktok.com/@yourprofile" %>
+              </div>
+              <div class="form-field"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <%= link_to "Cancel", "/directory", class: "btn btn-default" %>
+            <%= submit_tag "Create Listing", class: "btn btn-primary", id: "submit-listing" %>
+          </div>
+
+          <div id="form-message" class="form-message" style="display: none;"></div>
+        <% end %>
       </div>
     <% end %>
   <% end %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Character counter for description
+  const descField = document.querySelector('textarea[name="business_listing[description]"]');
+  const descCount = document.getElementById('desc-count');
+
+  if (descField && descCount) {
+    descField.addEventListener('input', function() {
+      descCount.textContent = this.value.length;
+    });
+  }
+
+  // Handle form submission
+  const form = document.getElementById('create-listing-form');
+  const submitBtn = document.getElementById('submit-listing');
+  const messageDiv = document.getElementById('form-message');
+
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.value = 'Creating...';
+
+      // Get form data
+      const formData = new FormData(form);
+
+      // Send AJAX request
+      fetch('/my-business', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          messageDiv.className = 'form-message success';
+          messageDiv.textContent = data.message || 'Listing created successfully!';
+          messageDiv.style.display = 'block';
+
+          // Reload page after 2 seconds to show the listing
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          messageDiv.className = 'form-message error';
+          messageDiv.textContent = data.errors ? data.errors.join(', ') : 'An error occurred';
+          messageDiv.style.display = 'block';
+
+          submitBtn.disabled = false;
+          submitBtn.value = 'Create Listing';
+        }
+      })
+      .catch(error => {
+        messageDiv.className = 'form-message error';
+        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.style.display = 'block';
+
+        submitBtn.disabled = false;
+        submitBtn.value = 'Create Listing';
+      });
+    });
+  }
+});
+</script>
 
 <style>
 .subscription-required {
@@ -333,6 +478,52 @@
     font-size: 0.9rem;
     color: var(--tertiary);
     font-weight: 600;
+  }
+}
+
+.create-listing-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.form-intro {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .no-listings-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: var(--primary-medium);
+  }
+}
+
+.form-message {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+
+  &.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  &.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
   }
 }
 </style>
