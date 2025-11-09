@@ -54,7 +54,7 @@ class CompanyDirectoryController < ApplicationController
     @canonical_url = request.original_url.split('?').first
     
     respond_to do |format|
-      format.html { render :index, layout: false }
+      format.html { render :index, layout: "crawler" }
       format.json do
         render json: {
           listings: @listings.map { |listing| serialize_listing(listing) },
@@ -137,7 +137,7 @@ class CompanyDirectoryController < ApplicationController
     @canonical_url = request.original_url.split('?').first
     
     respond_to do |format|
-      format.html { render :city_category_page, layout: false }
+      format.html { render :city_category_page, layout: "crawler" }
       format.json do
         render json: {
           city: @city,
@@ -186,7 +186,7 @@ class CompanyDirectoryController < ApplicationController
                                       .limit(6)
     
     respond_to do |format|
-      format.html { render :business_profile, layout: false }
+      format.html { render :business_profile, layout: "crawler" }
       format.json do
         render json: {
           listing: serialize_listing_detailed(@listing),
@@ -211,7 +211,7 @@ class CompanyDirectoryController < ApplicationController
     
     respond_to do |format|
       format.html do
-        render template: "default/empty", layout: false
+        render template: "default/empty", layout: "crawler"
       end
       format.json do
         render json: {
