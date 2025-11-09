@@ -64,14 +64,14 @@
         <h1 class="business-name"><%= @listing.business_name %></h1>
         <div class="business-meta">
           <span class="category">
-            <%= icon('camera') %> <%= @listing.category %>
+            📷 <%= @listing.category %>
           </span>
           <span class="location">
-            <%= icon('map-marker-alt') %> <%= @listing.city %>
+            📍 <%= @listing.city %>
           </span>
           <% if @listing.featured? %>
             <span class="featured-badge">
-              <%= icon('star') %> Featured
+              ⭐ Featured
             </span>
           <% end %>
         </div>
@@ -81,15 +81,15 @@
         <% @listing.contact_methods.each do |method| %>
           <% if method[:type] == 'email' %>
             <a href="mailto:<%= method[:value] %>" class="btn btn-primary contact-btn">
-              <%= icon('envelope') %> Email
+              ✉️ Email
             </a>
           <% elsif method[:type] == 'phone' %>
             <a href="tel:<%= method[:value] %>" class="btn btn-secondary contact-btn">
-              <%= icon('phone') %> Call
+              📞 Call
             </a>
           <% elsif method[:type] == 'website' %>
             <a href="<%= method[:value] %>" target="_blank" rel="noopener" class="btn btn-secondary contact-btn">
-              <%= icon('globe') %> Website
+              🌐 Website
             </a>
           <% end %>
         <% end %>
@@ -148,26 +148,26 @@
           
           <% if @listing.phone.present? %>
             <div class="contact-item">
-              <%= icon('phone') %>
+              📞
               <a href="tel:<%= @listing.phone %>"><%= @listing.phone %></a>
             </div>
           <% end %>
 
           <% if @listing.email.present? %>
             <div class="contact-item">
-              <%= icon('envelope') %>
+              ✉️
               <a href="mailto:<%= @listing.email %>"><%= @listing.email %></a>
             </div>
           <% end %>
 
           <div class="contact-item">
-            <%= icon('map-marker-alt') %>
+            📍
             <span><%= @listing.city %></span>
           </div>
 
           <% if @listing.website.present? %>
             <div class="contact-item">
-              <%= icon('globe') %>
+              🌐
               <a href="<%= @listing.website %>" target="_blank" rel="noopener">Visit Website</a>
             </div>
           <% end %>
@@ -179,7 +179,7 @@
             <div class="social-links">
               <% @listing.social_links.each do |link| %>
                 <a href="<%= link[:url] %>" target="_blank" rel="noopener" class="social-link">
-                  <%= icon(link[:icon]) %> <%= link[:platform] %>
+                  <%= link[:platform] %>
                 </a>
               <% end %>
             </div>
@@ -188,11 +188,11 @@
 
         <div class="profile-stats">
           <div class="stat-item">
-            <%= icon('eye') %>
+            👁️
             <span><%= @listing.views_count %> views</span>
           </div>
           <div class="stat-item">
-            <%= icon('calendar') %>
+            📅
             <span>Listed <%= time_ago_in_words(@listing.created_at) %> ago</span>
           </div>
         </div>
@@ -215,7 +215,7 @@
               <h3><%= link_to listing.business_name, listing.profile_url %></h3>
               <p><%= directory_rich_text(listing.description, truncate_at: 100) %></p>
               <div class="listing-meta">
-                <span><%= icon('map-marker-alt') %> <%= listing.city %></span>
+                <span>📍 <%= listing.city %></span>
                 <% if listing.featured? %>
                   <span class="featured">Featured</span>
                 <% end %>

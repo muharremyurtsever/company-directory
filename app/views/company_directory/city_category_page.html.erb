@@ -86,7 +86,6 @@
     </div>
   <% else %>
     <div class="no-listings">
-      <%= icon('camera', class: 'no-listings-icon') %>
       <h3>No <%= @category %>s found in <%= @city %></h3>
       <p>Be the first photographer to list your services in this category!</p>
       <% if current_user&.can_create_business_listing? %>

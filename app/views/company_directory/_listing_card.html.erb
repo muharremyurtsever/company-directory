@@ -1,7 +1,7 @@
 <div class="business-listing-card <%= 'featured' if featured %>">
   <% if featured %>
     <div class="featured-badge">
-      <%= icon('star') %> Featured
+      ⭐ Featured
     </div>
   <% end %>
 
@@ -13,7 +13,7 @@
       <div class="business-listing-category"><%= listing.category %></div>
     </div>
     <div class="listing-location">
-      <%= icon('map-marker-alt') %> <%= listing.city %>
+      📍 <%= listing.city %>
     </div>
   </div>
 
@@ -32,12 +32,12 @@
   <div class="business-listing-meta">
     <% if listing.website.present? %>
       <a href="<%= listing.website %>" target="_blank" rel="noopener" class="website-link">
-        <%= icon('globe') %> Website
+        🌐 Website
       </a>
     <% end %>
 
     <div class="views-count">
-      <%= icon('eye') %> <%= listing.views_count %> views
+      👁️ <%= listing.views_count %> views
     </div>
 
     <div class="listing-actions">
