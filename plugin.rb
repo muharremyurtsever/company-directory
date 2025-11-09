@@ -16,7 +16,7 @@ end
 
 gem "mini_magick", "4.12.0"
 gem "image_processing", "1.12.2"
-gem "ruby-vips", "~> 2.2"
+gem "ruby-vips", "2.2.5"
 
 enabled_site_setting :company_directory_enabled
 
