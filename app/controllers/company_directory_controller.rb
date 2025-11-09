@@ -2,7 +2,12 @@
 
 class CompanyDirectoryController < ApplicationController
   requires_plugin 'company-directory'
-  
+
+  # CRITICAL: Allow non-XHR requests for HTML rendering (Discourse 2025/Rails 8 compatibility)
+  skip_before_action :check_xhr, only: [:index, :city_category_page, :business_profile, :my_business]
+  skip_before_action :preload_json, only: [:index, :city_category_page, :business_profile, :my_business]
+  skip_before_action :redirect_to_login_if_required, only: [:index, :city_category_page, :business_profile]
+
   before_action :ensure_logged_in, only: [:my_business, :create_business, :update_business, :delete_business]
   before_action :ensure_directory_enabled
   before_action :find_business_listing, only: [:update_business, :delete_business]

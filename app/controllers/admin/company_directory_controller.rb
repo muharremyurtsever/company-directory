@@ -2,7 +2,11 @@
 
 class Admin::CompanyDirectoryController < Admin::AdminController
   requires_plugin 'company-directory'
-  
+
+  # CRITICAL: Allow non-XHR requests for HTML rendering (Discourse 2025/Rails 8 compatibility)
+  skip_before_action :check_xhr, only: [:index, :listings, :settings]
+  skip_before_action :preload_json, only: [:index, :listings, :settings]
+
   before_action :ensure_staff
   before_action :find_listing, only: [:update_listing, :delete_listing]
   

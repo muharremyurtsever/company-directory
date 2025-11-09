@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # name: company-directory
-# about: UK Company Directory Plugin with Paid Subscription Integration and SEO Pages
+# about: UK Company Directory Plugin with Paid Subscription Integration and SEO Pages (Discourse 2025 / Rails 8 Compatible)
 # meta_topic_id: TODO
-# version: 1.0.0
+# version: 2.0.0
 # authors: ThePhotographers.uk Team
-# url: https://github.com/trbozo/company-directory
+# url: https://github.com/muharremyurtsever/company-directory
 # required_version: 3.3.0
 # transpile_js: true
 
@@ -23,6 +23,14 @@ enabled_site_setting :company_directory_enabled
 register_asset 'stylesheets/company-directory.scss'
 
 after_initialize do
+  # ==================================================================================
+  # DISCOURSE 2025 / RAILS 8 COMPATIBLE PLUGIN
+  # ==================================================================================
+  # This plugin uses SERVER-SIDE RENDERING (ERB templates) with proper XHR skip
+  # All controllers have `skip_before_action :check_xhr` for HTML routes
+  # This is the modern approach for Discourse 2025 plugins that need SEO pages
+  # ==================================================================================
+
   # Load plugin files
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "app/**/*.rb")).each { |f| load f }
   Dir.glob(File.join(::CompanyDirectory::PLUGIN_ROOT, "lib/**/*.rb")).each { |f| load f }
