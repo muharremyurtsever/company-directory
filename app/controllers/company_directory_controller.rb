@@ -210,7 +210,7 @@ class CompanyDirectoryController < ApplicationController
     @max_images = SiteSetting.company_directory_max_images
 
     respond_to do |format|
-      format.html { render :my_business, layout: "no_ember" }
+      format.html { render "default/empty", layout: "application" }
       format.json do
         render json: {
           listing: @listing ? serialize_listing_detailed(@listing) : nil,
