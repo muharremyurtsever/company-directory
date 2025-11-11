@@ -2,6 +2,8 @@ en:
   site_settings:
     company_directory_enabled: "Enable Company Directory"
     company_directory_subscription_plan_id: "Subscription Plan ID"
+    company_directory_listings_per_page: "Listings per page"
+    company_directory_max_packages: "Max packages per listing"
     company_directory_auto_approve: "Auto-approve listings"
     company_directory_max_images: "Max images per listing"
     company_directory_show_in_sitemap: "Show in sitemap"
