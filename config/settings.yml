@@ -25,3 +25,37 @@ plugins:
     min: 1
     max: 10
     description: "Maximum number of pricing packages allowed per business listing"
+  company_directory_auto_approve:
+    default: false
+    client: false
+    description: "Automatically approve new business listings without manual review"
+  company_directory_featured_limit:
+    default: 10
+    client: true
+    min: 0
+    max: 50
+    description: "Maximum number of featured listings to display"
+  company_directory_show_in_sitemap:
+    default: true
+    client: false
+    description: "Include business listings in the sitemap for search engines"
+  company_directory_locations:
+    type: list
+    default: "London|Manchester|Birmingham|Leeds|Glasgow|Edinburgh|Liverpool|Bristol|Cardiff|Belfast"
+    client: true
+    list_type: compact
+    description: "Available cities/locations for business listings (one per line or pipe-separated)"
+  company_directory_categories:
+    type: list
+    default: "Wedding Photographer|Portrait Photographer|Commercial Photographer|Event Photographer|Product Photographer|Fashion Photographer|Real Estate Photographer|Nature Photographer"
+    client: true
+    list_type: compact
+    description: "Available photography categories (one per line or pipe-separated)"
+  company_directory_send_expiry_notifications:
+    default: true
+    client: false
+    description: "Send notifications when business listings expire due to inactive subscriptions"
+  company_directory_send_reactivation_notifications:
+    default: true
+    client: false
+    description: "Send notifications when business listings are reactivated"
