@@ -1,10 +1,8 @@
-import { registerRawHelper } from "discourse-common/lib/helpers";
+import { helper } from "@ember/component/helper";
 
-registerRawHelper("take", take);
-
-export default function take(array, count) {
-  if (!array || !Array.isArray(array)) {
-    return [];
-  }
+function take([array, count]) {
+  if (!array || !Array.isArray(array)) return [];
   return array.slice(0, count);
 }
+
+export default helper(take);

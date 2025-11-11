@@ -1,23 +1,20 @@
 import { htmlSafe } from "@ember/template";
-import { registerRawHelper } from "discourse-common/lib/helpers";
+import { helper } from "@ember/component/helper";
 
-registerRawHelper("directory-rich-text", directoryRichText);
+function directoryRichText([text], { truncate } = {}) {
+  if (!text) return "";
 
-export default function directoryRichText(text, params) {
-  if (!text) {
-    return "";
-  }
-
-  const truncateAt = params?.hash?.truncate;
   let processedText = text;
 
-  // Basic sanitization - convert newlines to <br> tags
+  // Convert newlines to <br>
   processedText = processedText.replace(/\n/g, "<br>");
 
   // Truncate if specified
-  if (truncateAt && processedText.length > truncateAt) {
-    processedText = processedText.substring(0, truncateAt) + "...";
+  if (truncate && processedText.length > truncate) {
+    processedText = processedText.substring(0, truncate) + "...";
   }
 
   return htmlSafe(processedText);
 }
+
+export default helper(directoryRichText);
