@@ -8,31 +8,31 @@
   <meta property="og:url" content="<%= h(@canonical_url) %>">
   <meta property="og:type" content="website">
   <link rel="canonical" href="<%= h(@canonical_url) %>">
-  
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "<%= json_escape("#{@city} #{@category}s") %>",
-    "description": "<%= json_escape(@page_description) %>",
-    "url": "<%= json_escape(@canonical_url) %>",
+    "name": <%= raw json_escape("#{@city} #{@category}s").to_json %>,
+    "description": <%= raw json_escape(@page_description).to_json %>,
+    "url": <%= raw json_escape(@canonical_url).to_json %>,
     "numberOfItems": <%= @total_count %>,
     "provider": {
       "@type": "Organization",
       "name": "ThePhotographers.uk",
-      "url": "<%= json_escape(Discourse.base_url) %>"
+      "url": <%= raw json_escape(Discourse.base_url).to_json %>
     },
     "geo": {
       "@type": "Place",
-      "name": "<%= json_escape(@city) %>",
-      "addressLocality": "<%= json_escape(@city) %>",
+      "name": <%= raw json_escape(@city).to_json %>,
+      "addressLocality": <%= raw json_escape(@city).to_json %>,
       "addressCountry": "GB"
     }
   }
   </script>
 <% end %>
 
-<div class="company-directory-container">
+<div class="contents wrap company-directory-container">
   <nav class="breadcrumb">
     <%= link_to "Directory", "/directory" %> &gt;
     <span><%= @city %> <%= @category %>s</span>

@@ -1,0 +1,206 @@
+<div class="company-directory-container">
+  <header class="directory-header">
+    <h1>UK Photography Directory</h1>
+    <p>Find professional photographers across the UK. Browse portfolios, compare services, and connect with local photography experts.</p>
+    <div class="directory-meta">
+      <span>{{this.totalCount}} {{i18n-count this.totalCount "company_directory.photographer" "company_directory.photographers"}} listed</span>
+      {{#if this.canShowManageListing}}
+        <LinkTo @route="my-business" class="btn btn-primary">
+          Manage My Listing
+        </LinkTo>
+      {{/if}}
+    </div>
+  </header>
+
+  <section class="directory-filters">
+    <form class="directory-filter-form" {{on "submit" this.applyFilters}}>
+      <div class="filter-group">
+        <label for="directory-city">City</label>
+        <ComboBox
+          @id="directory-city"
+          @value={{this.city}}
+          @content={{this.cityOptions}}
+          @onChange={{fn (mut this.city)}}
+          class="directory-filter-select"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="directory-category">Category</label>
+        <ComboBox
+          @id="directory-category"
+          @value={{this.category}}
+          @content={{this.categoryOptions}}
+          @onChange={{fn (mut this.category)}}
+          class="directory-filter-select"
+        />
+      </div>
+
+      <div class="search-group">
+        <label for="directory-search" class="sr-only">Search</label>
+        <TextField
+          @id="directory-search"
+          @value={{this.search}}
+          @placeholderKey="company_directory.search_placeholder"
+          class="directory-search-input"
+        />
+        <DButton
+          @action={{this.applyFilters}}
+          @label="company_directory.apply_filters"
+          class="btn-primary directory-search-btn"
+        />
+      </div>
+
+      {{#if this.hasAnyFilters}}
+        <div class="filter-actions">
+          <DButton
+            @action={{this.clearFilters}}
+            @label="company_directory.clear_filters"
+            class="btn-default"
+          />
+        </div>
+      {{/if}}
+    </form>
+  </section>
+
+  {{#if this.listings.length}}
+    {{#if this.featuredListings.length}}
+      <section class="featured-listings">
+        <h2>Featured photographers</h2>
+        <div class="business-listings">
+          {{#each this.featuredListings as |listing|}}
+            <div class="business-listing-card featured">
+              <div class="featured-badge">
+                ⭐ Featured
+              </div>
+
+              <div class="business-listing-header">
+                <div class="listing-main-info">
+                  <h3 class="business-listing-title">
+                    <a href={{listing.profile_url}}>{{listing.business_name}}</a>
+                  </h3>
+                  <div class="business-listing-category">{{listing.category}}</div>
+                </div>
+                <div class="listing-location">
+                  📍 {{listing.city}}
+                </div>
+              </div>
+
+              <div class="business-listing-description">
+                {{html-safe (directory-rich-text listing.description truncate=200)}}
+              </div>
+
+              {{#if listing.image_urls.length}}
+                <div class="business-listing-images">
+                  {{#each (take 3 listing.image_urls) as |imageUrl|}}
+                    <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              <div class="business-listing-meta">
+                {{#if listing.website}}
+                  <a href={{listing.website}} target="_blank" rel="noopener" class="website-link">
+                    🌐 Website
+                  </a>
+                {{/if}}
+
+                <div class="views-count">
+                  👁️ {{listing.views_count}} views
+                </div>
+
+                <div class="listing-actions">
+                  <a href={{listing.profile_url}} class="btn btn-primary btn-small">
+                    View Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </section>
+    {{/if}}
+
+    {{#if this.regularListings.length}}
+      <section class="regular-listings">
+        <h2>All photographers</h2>
+        <div class="business-listings">
+          {{#each this.regularListings as |listing|}}
+            <div class="business-listing-card">
+              <div class="business-listing-header">
+                <div class="listing-main-info">
+                  <h3 class="business-listing-title">
+                    <a href={{listing.profile_url}}>{{listing.business_name}}</a>
+                  </h3>
+                  <div class="business-listing-category">{{listing.category}}</div>
+                </div>
+                <div class="listing-location">
+                  📍 {{listing.city}}
+                </div>
+              </div>
+
+              <div class="business-listing-description">
+                {{html-safe (directory-rich-text listing.description truncate=200)}}
+              </div>
+
+              {{#if listing.image_urls.length}}
+                <div class="business-listing-images">
+                  {{#each (take 3 listing.image_urls) as |imageUrl|}}
+                    <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              <div class="business-listing-meta">
+                {{#if listing.website}}
+                  <a href={{listing.website}} target="_blank" rel="noopener" class="website-link">
+                    🌐 Website
+                  </a>
+                {{/if}}
+
+                <div class="views-count">
+                  👁️ {{listing.views_count}} views
+                </div>
+
+                <div class="listing-actions">
+                  <a href={{listing.profile_url}} class="btn btn-primary btn-small">
+                    View Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </section>
+    {{/if}}
+
+    {{#if (gt this.totalPages 1)}}
+      <nav class="pagination-container">
+        {{#if (gt this.currentPage 1)}}
+          <DButton
+            @action={{this.previousPage}}
+            @label="company_directory.previous"
+            class="btn-default"
+          />
+        {{/if}}
+        {{#if (lt this.currentPage this.totalPages)}}
+          <DButton
+            @action={{this.nextPage}}
+            @label="company_directory.next"
+            class="btn-default"
+          />
+        {{/if}}
+      </nav>
+    {{/if}}
+  {{else}}
+    <div class="no-listings">
+      <h3>No photographers found</h3>
+      <p>Try adjusting your filters or check back soon for new listings.</p>
+      {{#if this.canShowManageListing}}
+        <LinkTo @route="my-business" class="btn btn-primary">
+          Create Your Listing
+        </LinkTo>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

@@ -60,6 +60,14 @@ en:
         package_name_required: "Package name is required"
         package_price_invalid: "Please enter a valid price"
         
+      photographer: "photographer"
+      photographers: "photographers"
+      apply_filters: "Apply Filters"
+      clear_filters: "Clear Filters"
+      previous: "Previous"
+      next: "Next"
+      search_placeholder: "Search photographers..."
+
       directory:
         page_title: "UK Photography Directory"
         search_placeholder: "Search photographers..."
