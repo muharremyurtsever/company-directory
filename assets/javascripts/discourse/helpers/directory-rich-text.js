@@ -1,7 +1,8 @@
+import { htmlSafe } from "@ember/template";
 import { helper } from "@ember/component/helper";
 
 function directoryRichText([text], { truncate } = {}) {
-  if (!text) return "";
+  if (!text) return htmlSafe("");
 
   let processedText = text;
 
@@ -13,7 +14,7 @@ function directoryRichText([text], { truncate } = {}) {
     processedText = processedText.substring(0, truncate) + "...";
   }
 
-  return processedText;
+  return htmlSafe(processedText);
 }
 
 export default helper(directoryRichText);

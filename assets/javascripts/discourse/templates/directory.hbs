@@ -87,12 +87,12 @@
               </div>
 
               <div class="business-listing-description">
-                {{html-safe (directory-rich-text listing.description truncate=200)}}
+                {{directory-rich-text listing.description truncate=200}}
               </div>
 
               {{#if listing.image_urls.length}}
                 <div class="business-listing-images">
-                  {{#each (take 3 listing.image_urls) as |imageUrl|}}
+                  {{#each (take listing.image_urls 3) as |imageUrl|}}
                     <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
                   {{/each}}
                 </div>
@@ -140,12 +140,12 @@
               </div>
 
               <div class="business-listing-description">
-                {{html-safe (directory-rich-text listing.description truncate=200)}}
+                {{directory-rich-text listing.description truncate=200}}
               </div>
 
               {{#if listing.image_urls.length}}
                 <div class="business-listing-images">
-                  {{#each (take 3 listing.image_urls) as |imageUrl|}}
+                  {{#each (take listing.image_urls 3) as |imageUrl|}}
                     <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
                   {{/each}}
                 </div>
