@@ -1,7 +1,6 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
-import { htmlSafe } from "@ember/template";
 
 export default class DirectoryRoute extends DiscourseRoute {
   queryParams = {
@@ -27,9 +26,10 @@ export default class DirectoryRoute extends DiscourseRoute {
           if (processed.length > 200) {
             processed = processed.substring(0, 200) + "...";
           }
-          listing.formattedDescription = htmlSafe(processed);
+          // Return plain string - template will handle HTML rendering with {{{ }}}
+          listing.formattedDescription = processed;
         } else {
-          listing.formattedDescription = htmlSafe("");
+          listing.formattedDescription = "";
         }
         return listing;
       });
