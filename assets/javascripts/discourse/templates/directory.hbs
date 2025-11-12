@@ -3,7 +3,7 @@
     <h1>UK Photography Directory</h1>
     <p>Find professional photographers across the UK. Browse portfolios, compare services, and connect with local photography experts.</p>
     <div class="directory-meta">
-      <span>{{this.totalCount}} {{i18n-count this.totalCount "company_directory.photographer" "company_directory.photographers"}} listed</span>
+      <span>{{this.totalCount}} {{#if (eq this.totalCount 1)}}{{i18n "company_directory.photographer"}}{{else}}{{i18n "company_directory.photographers"}}{{/if}} listed</span>
       {{#if this.canShowManageListing}}
         <LinkTo @route="my-business" class="btn btn-primary">
           Manage My Listing
