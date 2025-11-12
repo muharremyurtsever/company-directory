@@ -1,6 +1,7 @@
 import DiscourseRoute from "discourse/routes/discourse";
 import { ajax } from "discourse/lib/ajax";
 import { action } from "@ember/object";
+import { htmlSafe } from "@ember/template";
 
 export default class DirectoryRoute extends DiscourseRoute {
   queryParams = {
@@ -18,8 +19,23 @@ export default class DirectoryRoute extends DiscourseRoute {
     if (params.page) queryParams.page = params.page;
 
     return ajax("/directory.json", { data: queryParams }).then((data) => {
+      // Process listings to format descriptions with line breaks
+      const processedListings = (data.listings || []).map((listing) => {
+        if (listing.description) {
+          // Convert newlines to <br> tags and truncate
+          let processed = listing.description.replace(/\n/g, "<br>");
+          if (processed.length > 200) {
+            processed = processed.substring(0, 200) + "...";
+          }
+          listing.formattedDescription = htmlSafe(processed);
+        } else {
+          listing.formattedDescription = htmlSafe("");
+        }
+        return listing;
+      });
+
       return {
-        listings: data.listings || [],
+        listings: processedListings,
         pagination: data.pagination || {},
         filters: data.filters || { cities: [], categories: [] },
       };
