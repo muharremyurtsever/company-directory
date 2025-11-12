@@ -90,9 +90,9 @@
                 {{{listing.formattedDescription}}}
               </div>
 
-              {{#if listing.image_urls.length}}
+              {{#if listing.limitedImages.length}}
                 <div class="business-listing-images">
-                  {{#each (take listing.image_urls 3) as |imageUrl|}}
+                  {{#each listing.limitedImages as |imageUrl|}}
                     <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
                   {{/each}}
                 </div>
@@ -143,9 +143,9 @@
                 {{{listing.formattedDescription}}}
               </div>
 
-              {{#if listing.image_urls.length}}
+              {{#if listing.limitedImages.length}}
                 <div class="business-listing-images">
-                  {{#each (take listing.image_urls 3) as |imageUrl|}}
+                  {{#each listing.limitedImages as |imageUrl|}}
                     <img src={{imageUrl}} alt={{listing.business_name}} class="business-listing-image" loading="lazy">
                   {{/each}}
                 </div>

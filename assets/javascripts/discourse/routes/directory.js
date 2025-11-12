@@ -18,7 +18,7 @@ export default class DirectoryRoute extends DiscourseRoute {
     if (params.page) queryParams.page = params.page;
 
     return ajax("/directory.json", { data: queryParams }).then((data) => {
-      // Process listings to format descriptions with line breaks
+      // Process listings to format descriptions with line breaks and limit images
       const processedListings = (data.listings || []).map((listing) => {
         if (listing.description) {
           // Convert newlines to <br> tags and truncate
@@ -31,6 +31,14 @@ export default class DirectoryRoute extends DiscourseRoute {
         } else {
           listing.formattedDescription = "";
         }
+
+        // Limit images to first 3
+        if (listing.image_urls && Array.isArray(listing.image_urls)) {
+          listing.limitedImages = listing.image_urls.slice(0, 3);
+        } else {
+          listing.limitedImages = [];
+        }
+
         return listing;
       });
 
